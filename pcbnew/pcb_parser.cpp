@@ -1707,12 +1707,37 @@ DIMENSION* PCB_PARSER::parseDIMENSION() throw( IO_ERROR, PARSE_ERROR )
             NeedRIGHT();
             break;
 
+        case T_outside:
+            dimension->SetOutside(parseBool());
+            NeedRIGHT();
+            break;
+
+        case T_free_text:
+            dimension->SetFreeText(parseBool());
+            NeedRIGHT();
+            break;
+
+        case T_dim_text_pos:
+            NeedLEFT();
+            token = NextTok();
+
+            if( token != T_pts )
+                Expecting( T_pts );
+
+            int x, y;
+            parseXY( &x, &y );
+            dimension->SetTextPosition(wxPoint(x, y));
+            NeedRIGHT();
+            NeedRIGHT();
+            break;
+
         default:
             Expecting( "layer, tstamp, gr_text, feature1, feature2 crossbar, arrow1a, "
                        "arrow1b, arrow2a, or arrow2b" );
         }
     }
 
+    dimension->AdjustDimensionDetails(true);
     return dimension.release();
 }
 

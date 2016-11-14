@@ -966,16 +966,29 @@ void PCB_PAINTER::draw( const DIMENSION* aDimension, int aLayer )
     m_gal->SetIsStroke( true );
     m_gal->SetLineWidth( aDimension->GetWidth() );
 
-    // Draw an arrow
-    m_gal->DrawLine( VECTOR2D( aDimension->m_crossBarO ), VECTOR2D( aDimension->m_crossBarF ) );
+
+    // Draw feature line
     m_gal->DrawLine( VECTOR2D( aDimension->m_featureLineGO ),
-                     VECTOR2D( aDimension->m_featureLineGF ) );
+            VECTOR2D( aDimension->m_featureLineGF ) );
     m_gal->DrawLine( VECTOR2D( aDimension->m_featureLineDO ),
-                     VECTOR2D( aDimension->m_featureLineDF ) );
+            VECTOR2D( aDimension->m_featureLineDF ) );
+
+    // Draw an arrow
     m_gal->DrawLine( VECTOR2D( aDimension->m_crossBarF ), VECTOR2D( aDimension->m_arrowD1F ) );
     m_gal->DrawLine( VECTOR2D( aDimension->m_crossBarF ), VECTOR2D( aDimension->m_arrowD2F ) );
     m_gal->DrawLine( VECTOR2D( aDimension->m_crossBarO ), VECTOR2D( aDimension->m_arrowG1F ) );
     m_gal->DrawLine( VECTOR2D( aDimension->m_crossBarO ), VECTOR2D( aDimension->m_arrowG2F ) );
+
+    // Draw arrow tail
+    if(aDimension->IsOutside())
+    {
+        m_gal->DrawLine( VECTOR2D( aDimension->m_crossBarO ), VECTOR2D( aDimension->m_crossBarOOut));
+        m_gal->DrawLine( VECTOR2D( aDimension->m_crossBarF ), VECTOR2D( aDimension->m_crossBarFOut));
+    }
+    else
+    {
+        m_gal->DrawLine( VECTOR2D( aDimension->m_crossBarO ), VECTOR2D( aDimension->m_crossBarF ) );
+    }
 
     // Draw text
     TEXTE_PCB& text = aDimension->Text();

@@ -115,6 +115,17 @@ DIALOG_DIMENSION_EDITOR::DIALOG_DIMENSION_EDITOR( PCB_EDIT_FRAME* aParent,
     else
         m_rbMirror->SetSelection( 0 );
 
+    if( aDimension->IsOutside() )
+        m_rbOutside->SetSelection( 1 );
+    else
+        m_rbOutside->SetSelection( 0 );
+
+    if( aDimension->IsFreeText() )
+        m_rbFreeText->SetSelection( 1 );
+    else
+        m_rbFreeText->SetSelection( 0 );
+
+
     m_Name->SetValue( aDimension->Text().GetText() );
 
     // Enter size value in dialog
@@ -220,6 +231,8 @@ void DIALOG_DIMENSION_EDITOR::OnOKClick( wxCommandEvent& event )
     m_currentDimension->SetWidth( width );
     m_currentDimension->Text().SetThickness( width );
     m_currentDimension->Text().SetMirrored( ( m_rbMirror->GetSelection() == 1 ) ? true : false );
+    m_currentDimension->SetOutside( ( m_rbOutside->GetSelection() == 1 ) ? true : false  );
+    m_currentDimension->SetFreeText( ( m_rbFreeText->GetSelection() == 1 ) ? true : false  );
     m_currentDimension->SetLayer( newlayer );
 
 #ifndef USE_WX_OVERLAY

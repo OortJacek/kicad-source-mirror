@@ -53,6 +53,8 @@ class DIALOG_DIMENSION_EDITOR_BASE : public DIALOG_SHIM
 		wxStaticText* m_staticTextPosY;
 		wxTextCtrl* m_textCtrlPosY;
 		wxRadioBox* m_rbMirror;
+		wxRadioBox* m_rbOutside;
+		wxRadioBox* m_rbFreeText;
 		wxStaticText* m_staticTextLayer;
 		PCB_LAYER_BOX_SELECTOR* m_SelLayerBox;
 		wxStaticLine* m_staticline1;

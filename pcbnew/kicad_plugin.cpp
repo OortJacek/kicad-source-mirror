@@ -827,6 +827,16 @@ void PCB_IO::format( DIMENSION* aDimension, int aNestLevel ) const
                   FMT_IU( aDimension->m_arrowG2F.x ).c_str(),
                   FMT_IU( aDimension->m_arrowG2F.y ).c_str() );
 
+    m_out->Print( aNestLevel+1, "(dim_text_pos (pts (xy %s %s)))\n",
+				  FMT_IU( aDimension->GetTextPosition().x ).c_str(),
+				  FMT_IU( aDimension->GetTextPosition().y ).c_str() );
+
+    m_out->Print( aNestLevel+1, "(free_text %s)\n",
+                      ( aDimension->IsFreeText() ) ? "yes" : "no" );
+
+    m_out->Print( aNestLevel+1, "(outside %s)\n",
+                      ( aDimension->IsOutside() ) ? "yes" : "no" );
+
     m_out->Print( aNestLevel, ")\n" );
 }
 

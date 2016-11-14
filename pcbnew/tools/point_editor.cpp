@@ -65,6 +65,7 @@ enum DIMENSION_POINTS
     DIM_CROSSBARF,
     DIM_FEATUREGO,
     DIM_FEATUREDO,
+	DIM_TEXTPOS,
 };
 
 
@@ -163,6 +164,7 @@ public:
                 points->AddPoint( dimension->m_crossBarF );
                 points->AddPoint( dimension->m_featureLineGO );
                 points->AddPoint( dimension->m_featureLineDO );
+                points->AddPoint( dimension->GetTextPosition() );
 
                 // Dimension height setting - edit points should move only along the feature lines
                 points->Point( DIM_CROSSBARO ).SetConstraint( new EC_LINE( points->Point( DIM_CROSSBARO ),
@@ -524,6 +526,10 @@ void POINT_EDITOR::updateItem() const
             m_editPoints->Point( DIM_CROSSBARF ).SetConstraint( new EC_LINE( m_editPoints->Point( DIM_CROSSBARF ),
                                                                              m_editPoints->Point( DIM_FEATUREDO ) ) );
         }
+        else if( isModified( m_editPoints->Point( DIM_TEXTPOS ) ) )
+        {
+            dimension->SetTextPosition( wxPoint( m_editedPoint->GetPosition().x, m_editedPoint->GetPosition().y ) );
+        }
 
         break;
     }
@@ -613,6 +619,7 @@ void POINT_EDITOR::updatePoints()
         m_editPoints->Point( DIM_CROSSBARF ).SetPosition( dimension->m_crossBarF );
         m_editPoints->Point( DIM_FEATUREGO ).SetPosition( dimension->m_featureLineGO );
         m_editPoints->Point( DIM_FEATUREDO ).SetPosition( dimension->m_featureLineDO );
+        m_editPoints->Point( DIM_TEXTPOS ).SetPosition( dimension->GetTextPosition() );
         break;
     }
 

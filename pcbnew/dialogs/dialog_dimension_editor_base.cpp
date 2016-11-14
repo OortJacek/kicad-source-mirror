@@ -80,6 +80,18 @@ DIALOG_DIMENSION_EDITOR_BASE::DIALOG_DIMENSION_EDITOR_BASE( wxWindow* parent, wx
 	m_rbMirror->SetSelection( 0 );
 	bSizerRight->Add( m_rbMirror, 0, wxALL|wxEXPAND, 5 );
 	
+	wxString m_rbOutsideChoices[] = { _("Inside"), _("Outside") };
+	int m_rbOutsideNChoices = sizeof( m_rbOutsideChoices ) / sizeof( wxString );
+	m_rbOutside = new wxRadioBox( this, wxID_ANY, _("Arrow position"), wxDefaultPosition, wxDefaultSize, m_rbOutsideNChoices, m_rbOutsideChoices, 1, wxRA_SPECIFY_COLS );
+	m_rbOutside->SetSelection( 0 );
+	bSizerRight->Add( m_rbOutside, 0, wxALL|wxEXPAND, 5 );
+
+	wxString m_rbFreeTextChoices[] = { _("Locked"), _("Free") };
+	int m_rbFreeTextNChoices = sizeof( m_rbFreeTextChoices ) / sizeof( wxString );
+	m_rbFreeText = new wxRadioBox( this, wxID_ANY, _("Text position"), wxDefaultPosition, wxDefaultSize, m_rbFreeTextNChoices, m_rbFreeTextChoices, 1, wxRA_SPECIFY_COLS );
+	m_rbFreeText->SetSelection( 0 );
+	bSizerRight->Add( m_rbFreeText, 0, wxALL|wxEXPAND, 5 );
+
 	m_staticTextLayer = new wxStaticText( this, wxID_ANY, _("Layer"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_staticTextLayer->Wrap( -1 );
 	bSizerRight->Add( m_staticTextLayer, 0, wxTOP|wxRIGHT|wxLEFT, 5 );

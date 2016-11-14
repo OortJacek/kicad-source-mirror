@@ -56,6 +56,7 @@ date
 descr
 die_length
 dimension
+dim_text_pos
 diff_pair_width
 diff_pair_gap
 drawings
@@ -77,6 +78,7 @@ fp_curve
 fp_line
 fp_poly
 fp_text
+free_text
 full
 general
 grid_origin
@@ -117,6 +119,7 @@ none
 not_allowed
 np_thru_hole
 offset
+outside
 oval
 pad
 pads

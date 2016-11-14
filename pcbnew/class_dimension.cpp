@@ -50,6 +50,8 @@ DIMENSION::DIMENSION( BOARD_ITEM* aParent ) :
 {
     m_Layer = Dwgs_User;
     m_Shape = 0;
+    m_outside = false;
+    m_FreeText = false;
 }
 
 
@@ -86,6 +88,7 @@ void DIMENSION::SetLayer( LAYER_ID aLayer )
 {
     m_Layer = aLayer;
     m_Text.SetLayer( aLayer );
+
 }
 
 
@@ -93,7 +96,9 @@ void DIMENSION::Move( const wxPoint& offset )
 {
     m_Text.SetTextPosition( m_Text.GetTextPosition() + offset );
     m_crossBarO     += offset;
+    m_crossBarOOut  += offset;
     m_crossBarF     += offset;
+    m_crossBarFOut  += offset;
     m_featureLineGO += offset;
     m_featureLineGF += offset;
     m_featureLineDO += offset;
@@ -131,6 +136,8 @@ void DIMENSION::Rotate( const wxPoint& aRotCentre, double aAngle )
     RotatePoint( &m_arrowG2F, aRotCentre, aAngle );
     RotatePoint( &m_arrowD1F, aRotCentre, aAngle );
     RotatePoint( &m_arrowD2F, aRotCentre, aAngle );
+
+
 }
 
 
@@ -168,11 +175,17 @@ void DIMENSION::Mirror( const wxPoint& axis_pos )
     INVERT( m_arrowD2F.y );
 }
 
+void DIMENSION::SetTextPosition( const wxPoint& aPosition)
+{
+	if(IsFreeText())
+	{
+		m_Text.SetTextPosition(aPosition);
+	}
+}
 
 void DIMENSION::SetOrigin( const wxPoint& aOrigin )
 {
     m_featureLineGO = aOrigin;
-
     AdjustDimensionDetails();
 }
 
@@ -180,17 +193,30 @@ void DIMENSION::SetOrigin( const wxPoint& aOrigin )
 void DIMENSION::SetEnd( const wxPoint& aEnd )
 {
     m_featureLineDO = aEnd;
-
     AdjustDimensionDetails();
+
 }
 
 
 void DIMENSION::SetHeight( int aHeight )
 {
     m_Height = aHeight;
-
     AdjustDimensionDetails();
 }
+
+void DIMENSION::SetOutside( bool aOutside)
+{
+	m_outside = aOutside;
+    AdjustDimensionDetails();
+}
+
+void DIMENSION::SetFreeText( bool aFreeText )
+{
+	m_FreeText = aFreeText;
+	if(!m_FreeText)
+	    AdjustDimensionDetails();
+}
+
 
 
 void DIMENSION::UpdateHeight()
@@ -208,12 +234,13 @@ void DIMENSION::UpdateHeight()
 void DIMENSION::AdjustDimensionDetails( bool aDoNotChangeText )
 {
     const int   arrowz = Mils2iu( 50 );             // size of arrows
+    const int	arrowt = Mils2iu( 70 );			// size of arrow tail
     int         ii;
     int         measure, deltax, deltay;            // value of the measure on X and Y axes
     int         arrow_up_X  = 0, arrow_up_Y = 0;    // coordinates of arrow line /
     int         arrow_dw_X  = 0, arrow_dw_Y = 0;    // coordinates of arrow line '\'
     int         hx, hy;                             // dimension line interval
-    double      angle, angle_f;
+    double      angle, angle_f, angle_arrow;
     wxString    msg;
 
     // Init layer :
@@ -250,14 +277,21 @@ void DIMENSION::AdjustDimensionDetails( bool aDoNotChangeText )
 
         if( m_featureLineGO.y == m_crossBarO.y )
             hy = 0;
-
-        angle_f     = angle + DEG2RAD( 27.5 );
-        arrow_up_X  = wxRound( arrowz * cos( angle_f ) );
-        arrow_up_Y  = wxRound( arrowz * sin( angle_f ) );
-        angle_f     = angle - DEG2RAD( 27.5 );
-        arrow_dw_X  = wxRound( arrowz * cos( angle_f ) );
-        arrow_dw_Y  = wxRound( arrowz * sin( angle_f ) );
     }
+
+    if( IsOutside() )
+        angle_arrow = 152.5;
+    else
+        angle_arrow = 27.5;
+
+    angle_f     = angle + DEG2RAD( angle_arrow ) ;
+    arrow_up_X  = wxRound( arrowz * cos( angle_f ) );
+    arrow_up_Y  = wxRound( arrowz * sin( angle_f ) );
+    angle_f     = angle - DEG2RAD( angle_arrow );
+    arrow_dw_X  = wxRound( arrowz * cos( angle_f ) );
+    arrow_dw_Y  = wxRound( arrowz * sin( angle_f ) );
+
+
 
     int dx = KiROUND( m_Height * cos( angle + M_PI / 2 ) );
     int dy = KiROUND( m_Height * sin( angle + M_PI / 2 ) );
@@ -265,6 +299,14 @@ void DIMENSION::AdjustDimensionDetails( bool aDoNotChangeText )
     m_crossBarO.y   = m_featureLineGO.y + dy;
     m_crossBarF.x   = m_featureLineDO.x + dx;
     m_crossBarF.y   = m_featureLineDO.y + dy;
+
+
+    dx = KiROUND( arrowt * cos( angle) );
+    dy = KiROUND( arrowt * sin( angle) );
+    m_crossBarFOut.x = m_crossBarF.x + dx;
+    m_crossBarFOut.y = m_crossBarF.y + dy;
+    m_crossBarOOut.x = m_crossBarO.x - dx;
+    m_crossBarOOut.y = m_crossBarO.y - dy;
 
     m_arrowG1F.x    = m_crossBarO.x + arrow_up_X;
     m_arrowG1F.y    = m_crossBarO.y + arrow_up_Y;
@@ -288,10 +330,13 @@ void DIMENSION::AdjustDimensionDetails( bool aDoNotChangeText )
     m_featureLineDF.y   = m_crossBarF.y + hy;
 
     // Calculate the better text position and orientation:
-    wxPoint textPos;
-    textPos.x  = (m_crossBarF.x + m_featureLineGF.x) / 2;
-    textPos.y  = (m_crossBarF.y + m_featureLineGF.y) / 2;
-    m_Text.SetTextPosition( textPos );
+    if(!IsFreeText())
+    {
+       wxPoint textPos;
+       textPos.x  = (m_crossBarF.x + m_featureLineGF.x) / 2;
+       textPos.y  = (m_crossBarF.y + m_featureLineGF.y) / 2;
+       m_Text.SetTextPosition( textPos );
+    }
 
     double newAngle = -RAD2DECIDEG( angle );
 

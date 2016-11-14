@@ -66,11 +66,14 @@ class DIMENSION : public BOARD_ITEM
     EDA_UNITS_T m_Unit;         ///< 0 = inches, 1 = mm
     int         m_Value;        ///< value of PCB dimensions.
     int         m_Height;       ///< length of feature lines
+    bool 		m_outside;		///< change inside/outside arrow drawing
+    bool		m_FreeText;		///< can be text moved freely
     TEXTE_PCB   m_Text;
 
 public:
 // TODO private: These member should be private. they are public only due to legacy code
     wxPoint     m_crossBarO, m_crossBarF;
+    wxPoint     m_crossBarOOut, m_crossBarFOut;
     wxPoint     m_featureLineGO, m_featureLineGF;
     wxPoint     m_featureLineDO, m_featureLineDF;
     wxPoint     m_arrowD1F, m_arrowD2F;
@@ -95,6 +98,9 @@ public:
     {
         m_Text.SetSize( aTextSize );
     }
+
+    const wxPoint& GetTextPosition() const	{ return m_Text.GetTextPosition(); }
+    void SetTextPosition(const wxPoint& aPosition);
 
     void SetLayer( LAYER_ID aLayer ) override;
 
@@ -151,6 +157,12 @@ public:
     {
         return m_Height;
     }
+
+    void SetOutside( bool aOutside);
+    bool IsOutside() const	{ return m_outside; }
+
+    void SetFreeText( bool aFreeText );
+    bool IsFreeText() const	{ return m_FreeText; }
 
     /**
      * Function UpdateHeight
