@@ -462,12 +462,14 @@ void PCB_EDIT_FRAME::ReCreateVToolbar()
                             _( "Add text on copper layers or graphic text" ), wxITEM_CHECK );
 
     m_drawToolBar->AddSeparator();
-    m_drawToolBar->AddTool( ID_PCB_DIMENSION_BUTT, wxEmptyString, KiBitmap( add_dimension_xpm ),
-                            _( "Add dimension" ), wxITEM_CHECK );
-    m_drawToolBar->AddTool( ID_PCB_DIMENSION_BUTT2, wxEmptyString, KiBitmap( add_dimension_xpm ),
-                            _( "Add dimension" ), wxITEM_CHECK );
-    m_drawToolBar->AddTool( ID_PCB_DIMENSION_BUTT3, wxEmptyString, KiBitmap( add_dimension_xpm ),
-                            _( "Add dimension" ), wxITEM_CHECK );
+    m_drawToolBar->AddTool( ID_PCB_DIMENSION_LINEAR_BUTT, wxEmptyString, KiBitmap( add_dimension_xpm ),
+                            _( "Add linear dimension" ), wxITEM_CHECK );
+
+    m_drawToolBar->AddTool( ID_PCB_DIMENSION_ANGULAR_BUTT, wxEmptyString, KiBitmap( add_dimension_xpm ),
+                            _( "Add angular dimension" ), wxITEM_CHECK );
+
+    m_drawToolBar->AddTool( ID_PCB_DIMENSION_RADIAL_BUTT, wxEmptyString, KiBitmap( add_dimension_xpm ),
+                            _( "Add radial dimension" ), wxITEM_CHECK );
 
     m_drawToolBar->AddTool( ID_PCB_MIRE_BUTT, wxEmptyString, KiBitmap( add_mires_xpm ),
                             _( "Add layer alignment target" ), wxITEM_CHECK );

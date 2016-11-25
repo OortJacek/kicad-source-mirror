@@ -338,7 +338,8 @@ int DRAWING_TOOL::DrawDimension( const TOOL_EVENT& aEvent )
     m_controls->SetSnapping( true );
 
     Activate();
-    m_frame->SetToolID( ID_PCB_DIMENSION_BUTT, wxCURSOR_PENCIL, _( "Add dimension" ) );
+    m_frame->SetToolID( ID_PCB_DIMENSION_LINEAR_BUTT, wxCURSOR_PENCIL, _( "Add dimension" ) );
+    /* tutaj w zaleznosci jaki buton taki aktywujemy np, ID_PCB_DIMENSION_RADIAL_BUTT */
 
     const int SET_ORIGIN = 0;
     const int FINISHED = 0;

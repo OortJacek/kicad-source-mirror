@@ -160,15 +160,17 @@ TOOL_ACTION COMMON_ACTIONS::placeText( "pcbnew.InteractiveDrawing.text",
         AS_GLOBAL, 0,
         _( "Add a text" ), _( "Add a text" ), NULL, AF_ACTIVATE );
 
-TOOL_ACTION COMMON_ACTIONS::drawDimension( "pcbnew.InteractiveDrawing.dimension",
+TOOL_ACTION COMMON_ACTIONS::drawDimension( "pcbnew.InteractiveDrawing.dimension.linear",
         AS_GLOBAL, 0,
-        _( "Add a dimension" ), _( "Add a dimension" ), NULL, AF_ACTIVATE );
-TOOL_ACTION COMMON_ACTIONS::drawDimension2( "pcbnew.InteractiveDrawing.dimension2",
+        _( "Add a linear dimension" ), _( "Add a linear dimension" ), NULL, AF_ACTIVATE );
+
+TOOL_ACTION COMMON_ACTIONS::drawDimension2( "pcbnew.InteractiveDrawing.dimension.angular",
         AS_GLOBAL, 0,
-        _( "Add a dimension" ), _( "Add a dimension" ), NULL, AF_ACTIVATE );
-TOOL_ACTION COMMON_ACTIONS::drawDimension3( "pcbnew.InteractiveDrawing.dimension3",
+        _( "Add a angular dimension" ), _( "Add a angular dimension" ), NULL, AF_ACTIVATE );
+
+TOOL_ACTION COMMON_ACTIONS::drawDimension3( "pcbnew.InteractiveDrawing.dimension.radial",
         AS_GLOBAL, 0,
-        _( "Add a dimension" ), _( "Add a dimension" ), NULL, AF_ACTIVATE );
+        _( "Add a radial dimension" ), _( "Add a radial dimension" ), NULL, AF_ACTIVATE );
 
 TOOL_ACTION COMMON_ACTIONS::drawZone( "pcbnew.InteractiveDrawing.zone",
         AS_GLOBAL, 0,
@@ -664,12 +666,16 @@ boost::optional<TOOL_EVENT> COMMON_ACTIONS::TranslateLegacyId( int aId )
     case ID_MODEDIT_TEXT_TOOL:
         return COMMON_ACTIONS::placeText.MakeEvent();
 
-    case ID_PCB_DIMENSION_BUTT:
+
+    case ID_PCB_DIMENSION_LINEAR_BUTT:
         return COMMON_ACTIONS::drawDimension.MakeEvent();
-    case ID_PCB_DIMENSION_BUTT2:
+
+    case ID_PCB_DIMENSION_ANGULAR_BUTT:
         return COMMON_ACTIONS::drawDimension2.MakeEvent();
-    case ID_PCB_DIMENSION_BUTT3:
+
+    case ID_PCB_DIMENSION_RADIAL_BUTT:
         return COMMON_ACTIONS::drawDimension3.MakeEvent();
+
 
     case ID_PCB_MIRE_BUTT:
         return COMMON_ACTIONS::placeTarget.MakeEvent();

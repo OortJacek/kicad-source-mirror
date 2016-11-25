@@ -406,7 +406,9 @@ bool PCB_EDIT_FRAME::OnRightClick( const wxPoint& aMousePos, wxMenu* aPopMenu )
     case ID_PCB_ARC_BUTT:
     case ID_PCB_ADD_TEXT_BUTT:
     case ID_PCB_ADD_LINE_BUTT:
-    case ID_PCB_DIMENSION_BUTT:
+    case ID_PCB_DIMENSION_LINEAR_BUTT:
+    case ID_PCB_DIMENSION_ANGULAR_BUTT:
+    case ID_PCB_DIMENSION_RADIAL_BUTT:
         AddMenuItem( aPopMenu, ID_POPUP_PCB_SELECT_NO_CU_LAYER,
                       _( "Select Working Layer" ), KiBitmap( select_w_layer_xpm ) );
         aPopMenu->AppendSeparator();

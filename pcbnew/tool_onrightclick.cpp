@@ -63,7 +63,9 @@ void PCB_EDIT_FRAME::ToolOnRightClick( wxCommandEvent& event )
     case ID_PCB_CIRCLE_BUTT:
     case ID_PCB_ARC_BUTT:
     case ID_PCB_ADD_LINE_BUTT:
-    case ID_PCB_DIMENSION_BUTT:
+    case ID_PCB_DIMENSION_LINEAR_BUTT:
+    case ID_PCB_DIMENSION_ANGULAR_BUTT:
+    case ID_PCB_DIMENSION_RADIAL_BUTT:
     case ID_PCB_ADD_TEXT_BUTT:
         OnConfigurePcbOptions( event );
         break;

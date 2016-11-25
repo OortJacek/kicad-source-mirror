@@ -388,7 +388,9 @@ void PCB_EDIT_FRAME::OnLeftClick( wxDC* aDC, const wxPoint& aPosition )
 
         break;
 
-    case ID_PCB_DIMENSION_BUTT:
+    case ID_PCB_DIMENSION_LINEAR_BUTT:
+    case ID_PCB_DIMENSION_ANGULAR_BUTT:
+    case ID_PCB_DIMENSION_RADIAL_BUTT:
         std::cout << "onleftclick.cpp:392 ID_PCB_DIMENSION_BUTT" << std::endl;
 
         if( IsCopperLayer( GetActiveLayer() ) || GetActiveLayer() == Edge_Cuts )

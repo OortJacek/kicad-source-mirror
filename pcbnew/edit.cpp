@@ -1506,9 +1506,9 @@ void PCB_EDIT_FRAME::OnSelectTool( wxCommandEvent& aEvent )
         SetToolID( id, wxCURSOR_HAND, _( "Add footprint" ) );
         break;
 
-    case ID_PCB_DIMENSION_BUTT:
-    case ID_PCB_DIMENSION_BUTT2:
-    case ID_PCB_DIMENSION_BUTT3:
+    case ID_PCB_DIMENSION_LINEAR_BUTT:
+    case ID_PCB_DIMENSION_ANGULAR_BUTT:
+    case ID_PCB_DIMENSION_RADIAL_BUTT:
         SetToolID( id, wxCURSOR_PENCIL, _( "Add dimension" ) );
         break;
 

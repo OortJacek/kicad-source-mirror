@@ -426,14 +426,16 @@ void PCB_EDIT_FRAME::ReCreateMenuBar()
 
     placeMenu->AppendSeparator();
 
-    AddMenuItem( placeMenu, ID_PCB_DIMENSION_BUTT,
-                 _( "&Dimension" ), _( "Add dimension" ),
+    AddMenuItem( placeMenu, ID_PCB_DIMENSION_LINEAR_BUTT,
+                 _( "&Dimension" ), _( "Add linear dimension" ),
                  KiBitmap( add_dimension_xpm ) );
-    AddMenuItem( placeMenu, ID_PCB_DIMENSION_BUTT2,
-                 _( "&Dimension" ), _( "Add dimension" ),
+
+    AddMenuItem( placeMenu, ID_PCB_DIMENSION_ANGULAR_BUTT,
+                 _( "&Dimension" ), _( "Add angular dimension" ),
                  KiBitmap( add_dimension_xpm ) );
-    AddMenuItem( placeMenu, ID_PCB_DIMENSION_BUTT3,
-                 _( "&Dimension" ), _( "Add dimension" ),
+
+    AddMenuItem( placeMenu, ID_PCB_DIMENSION_RADIAL_BUTT,
+                 _( "&Dimension" ), _( "Add radial dimension" ),
                  KiBitmap( add_dimension_xpm ) );
 
     AddMenuItem( placeMenu, ID_PCB_MIRE_BUTT,
