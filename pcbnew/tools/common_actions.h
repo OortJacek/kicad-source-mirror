@@ -110,6 +110,8 @@ public:
 
     /// Activation of the drawing tool (dimension)
     static TOOL_ACTION drawDimension;
+    static TOOL_ACTION drawDimension2;
+    static TOOL_ACTION drawDimension3;
 
     /// Activation of the drawing tool (drawing a ZONE)
     static TOOL_ACTION drawZone;

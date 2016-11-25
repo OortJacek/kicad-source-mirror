@@ -74,7 +74,7 @@ Load() TODO's
 #include <class_edge_mod.h>
 #include <class_zone.h>
 #include <class_pcb_text.h>
-#include <class_dimension.h>
+#include <dimension/class_dimension.h>
 
 using namespace boost::property_tree;
 using namespace std;
@@ -1672,36 +1672,37 @@ void EAGLE_PLUGIN::loadPlain( CPTREE& aGraphics )
         }
         else if( gr->first == "dimension" )
         {
-            EDIMENSION d( gr->second );
-
-            DIMENSION* dimension = new DIMENSION( m_board );
-            m_board->Add( dimension, ADD_APPEND );
-
-            dimension->SetLayer( kicad_layer( d.layer ) );
-            // The origin and end are assumed to always be in this order from eagle
-            dimension->SetOrigin( wxPoint( kicad_x( d.x1 ), kicad_y( d.y1 ) ) );
-            dimension->SetEnd( wxPoint( kicad_x( d.x2 ), kicad_y( d.y2 ) ) );
-            dimension->Text().SetSize( m_board->GetDesignSettings().m_PcbTextSize );
-
-            int width = m_board->GetDesignSettings().m_PcbTextWidth;
-            int maxThickness = Clamp_Text_PenSize( width, dimension->Text().GetSize() );
-
-            if( width > maxThickness )
-                width = maxThickness;
-
-            dimension->Text().SetThickness( width );
-            dimension->SetWidth( width );
-
-            // check which axis the dimension runs in
-            // because the "height" of the dimension is perpendicular to that axis
-            // Note the check is just if two axes are close enough to each other
-            // Eagle appears to have some rounding errors
-            if( fabs( d.x1 - d.x2 ) < 0.05 )
-                dimension->SetHeight( kicad_x( d.x1 - d.x3 ) );
-            else
-                dimension->SetHeight( kicad_y( d.y3 - d.y1 ) );
-
-            dimension->AdjustDimensionDetails();
+//            EDIMENSION d( gr->second );
+//
+//            DIMENSION* dimension = new DIMENSION( m_board );
+//            m_board->Add( dimension, ADD_APPEND );
+//
+//            dimension->SetLayer( kicad_layer( d.layer ) );
+//            // The origin and end are assumed to always be in this order from eagle
+//            dimension->SetOrigin( wxPoint( kicad_x( d.x1 ), kicad_y( d.y1 ) ) );
+//            dimension->SetEnd( wxPoint( kicad_x( d.x2 ), kicad_y( d.y2 ) ) );
+//            dimension->Text().SetSize( m_board->GetDesignSettings().m_PcbTextSize );
+//
+//            int width = m_board->GetDesignSettings().m_PcbTextWidth;
+//            int maxThickness = Clamp_Text_PenSize( width, dimension->Text().GetSize() );
+//
+//            if( width > maxThickness )
+//                width = maxThickness;
+//
+//            dimension->Text().SetThickness( width );
+//            dimension->SetWidth( width );
+//
+//            // check which axis the dimension runs in
+//            // because the "height" of the dimension is perpendicular to that axis
+//            // Note the check is just if two axes are close enough to each other
+//            // Eagle appears to have some rounding errors
+//            if( fabs( d.x1 - d.x2 ) < 0.05 )
+//                dimension->SetHeight( kicad_x( d.x1 - d.x3 ) );
+//            else
+//                dimension->SetHeight( kicad_y( d.y3 - d.y1 ) );
+//
+//            dimension->AdjustDimensionDetails();
+#warning ("TODO")
          }
     }
     m_xpath->pop();

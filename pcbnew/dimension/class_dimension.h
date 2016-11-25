@@ -36,6 +36,7 @@
 #include <class_pcb_text.h>
 
 #include <vector>
+#include <functional>
 
 
 class LINE_READER;
@@ -56,6 +57,8 @@ class DIMENSION : public BOARD_ITEM
 {
     int         m_Width;        ///< Line width
     int         m_Shape;        ///< Currently always 0.
+    int         m_DrawingPointsNumber;
+    double      m_Angle;
     EDA_UNITS_T m_Unit;         ///< 0 = inches, 1 = mm
     int         m_Value;        ///< value of PCB dimensions.
     bool 		m_outside;		///< change inside/outside arrow drawing
@@ -72,7 +75,7 @@ public:
     int             GetValue() const { return m_Value; }
 
     const wxPoint&  GetTextPosition() const	{ return m_Text.GetTextPosition(); }
-    void            SetTextPosition(const wxPoint& aPosition);
+    void            SetTextPosition( const wxPoint& aPosition ) {return;}
 
     void            SetText( const wxString& NewText );
     const wxString  GetText() const;
@@ -86,30 +89,33 @@ public:
     int             GetWidth() const { return m_Width; }
     void            SetWidth( int aWidth ) { m_Width = aWidth; }
 
-    void            SetOutside( bool aOutside);
+    void            SetOutside( bool aOutside) { return;}
     bool            IsOutside() const { return m_outside; }
 
-    void            SetFreeText( bool aFreeText );
+    void            SetFreeText( bool aFreeText ) {return;}
     bool            IsFreeText() const { return m_FreeText; }
 
     int             GetDimensionShape() {return m_Shape;}
 
 /* Specified dimension API */
+    virtual double  GetAngle() const = 0;
+    virtual void    SetAngle(double aAngle) const = 0;
 
-    virtual double  GetAngle() const;
-    virtual void    SetAngle(double aAngle) const;
+    virtual int     GetDrawingPointsNumber() = 0;;
+    virtual bool    SetDrawingPoint(int aPointNumber, wxPoint& aPos) = 0;
 
-    virtual int     GetPointsNumber();
-    virtual bool    SetPoint(int aPointNumber, wxPoint& aPos);
-
-    virtual std::vector<std::pair<wxPoint, wxPoint>> GetLines();
+    virtual std::vector<std::pair<wxPoint, wxPoint>>& GetLines() = 0;
+    virtual std::vector<std::pair<wxPoint, std::function<void()>>>& GetEditPoints() = 0;
 
 
 /* BOARD_ITEM derivatives */
-    const wxPoint&  GetPosition() const override { return GetTextPosition(); }
-    void            SetPosition( const wxPoint& aPos ) override { SetTextPosition(aPos); }
-    void            SetLayer( LAYER_ID aLayer ) override;
-    virtual wxString GetClass() const { return wxT( "DIMENSION" ); }
+    const wxPoint&  GetPosition() const                 override;
+    void            SetPosition( const wxPoint& aPos )  override;
+    void            SetLayer( LAYER_ID aLayer )         override;
+    wxString        GetClass() const                    override
+    {
+        return wxT( "DIMENSION" );
+    }
 
 #if defined(DEBUG)
     virtual void Show( int nestLevel, std::ostream& os ) const override { ShowDummy( os ); }

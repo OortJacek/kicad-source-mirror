@@ -32,7 +32,7 @@
 #include <class_pcb_text.h>
 #include <class_colors_design_settings.h>
 #include <class_marker_pcb.h>
-#include <class_dimension.h>
+#include <dimension/class_dimension.h>
 #include <class_mire.h>
 #include <class_marker_pcb.h>
 
@@ -967,27 +967,10 @@ void PCB_PAINTER::draw( const DIMENSION* aDimension, int aLayer )
     m_gal->SetLineWidth( aDimension->GetWidth() );
 
 
-    // Draw feature line
-    m_gal->DrawLine( VECTOR2D( aDimension->m_featureLineGO ),
-            VECTOR2D( aDimension->m_featureLineGF ) );
-    m_gal->DrawLine( VECTOR2D( aDimension->m_featureLineDO ),
-            VECTOR2D( aDimension->m_featureLineDF ) );
-
-    // Draw an arrow
-    m_gal->DrawLine( VECTOR2D( aDimension->m_crossBarF ), VECTOR2D( aDimension->m_arrowD1F ) );
-    m_gal->DrawLine( VECTOR2D( aDimension->m_crossBarF ), VECTOR2D( aDimension->m_arrowD2F ) );
-    m_gal->DrawLine( VECTOR2D( aDimension->m_crossBarO ), VECTOR2D( aDimension->m_arrowG1F ) );
-    m_gal->DrawLine( VECTOR2D( aDimension->m_crossBarO ), VECTOR2D( aDimension->m_arrowG2F ) );
-
-    // Draw arrow tail
-    if(aDimension->IsOutside())
+    std::vector<std::pair<wxPoint, wxPoint>> lines = aDimension->GetLines();
+    for(auto line = lines.begin(); line != lines.end(); line++)
     {
-        m_gal->DrawLine( VECTOR2D( aDimension->m_crossBarO ), VECTOR2D( aDimension->m_crossBarOOut));
-        m_gal->DrawLine( VECTOR2D( aDimension->m_crossBarF ), VECTOR2D( aDimension->m_crossBarFOut));
-    }
-    else
-    {
-        m_gal->DrawLine( VECTOR2D( aDimension->m_crossBarO ), VECTOR2D( aDimension->m_crossBarF ) );
+        m_gal->DrawLine( VECTOR2D( line->first ), VECTOR2D( line->second ));
     }
 
     // Draw text

@@ -36,7 +36,7 @@
 
 #include <class_board.h>
 #include <class_drawsegment.h>
-#include <class_dimension.h>
+#include <dimension/class_dimension.h>
 #include <class_zone.h>
 #include <class_pcb_text.h>
 #include <class_text_mod.h>
@@ -47,6 +47,8 @@
 #include <pcbnew.h>
 #include <pcbnew_id.h>
 #include <menus_helpers.h>
+
+#include <iostream>
 
 
 /* Handle the left button mouse click, when a tool is active
@@ -127,6 +129,7 @@ void PCB_EDIT_FRAME::OnLeftClick( wxDC* aDC, const wxPoint& aPosition )
                 break;
 
             case PCB_DIMENSION_T:
+                std::cout << "onleftclick.cpp:l32 PCB_DIMENSION_T" << std::endl;
                 if( ! curr_item->IsNew() )
                 {   // We are moving the text of an existing dimension. Place it
                     PlaceDimensionText( static_cast<DIMENSION*>( curr_item ), aDC );
@@ -386,6 +389,8 @@ void PCB_EDIT_FRAME::OnLeftClick( wxDC* aDC, const wxPoint& aPosition )
         break;
 
     case ID_PCB_DIMENSION_BUTT:
+        std::cout << "onleftclick.cpp:392 ID_PCB_DIMENSION_BUTT" << std::endl;
+
         if( IsCopperLayer( GetActiveLayer() ) || GetActiveLayer() == Edge_Cuts )
         {
             DisplayError( this, _( "Dimension not allowed on Copper or Edge Cut layers" ) );
@@ -491,6 +496,7 @@ void PCB_EDIT_FRAME::OnLeftDClick( wxDC* aDC, const wxPoint& aPosition )
         case PCB_TARGET_T:
         case PCB_DIMENSION_T:
         case PCB_MODULE_TEXT_T:
+            std::cout << "onleftclick.cpp:499 OnLeftDClick PCB_DIMENSION_T" << std::endl;
             OnEditItemRequest( aDC, curr_item );
             m_canvas->MoveCursorToCrossHair();
             break;
@@ -582,6 +588,7 @@ void PCB_EDIT_FRAME::OnEditItemRequest( wxDC* aDC, BOARD_ITEM* aItem )
         break;
 
     case PCB_DIMENSION_T:
+        std::cout << "onleftclick.cpp:592 OnEditItemRequest ShowDimensionPropertyDialog" << std::endl;
         ShowDimensionPropertyDialog( static_cast<DIMENSION*>( aItem ), aDC );
         break;
 

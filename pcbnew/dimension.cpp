@@ -41,7 +41,7 @@
 
 #include <class_board.h>
 #include <class_pcb_text.h>
-#include <class_dimension.h>
+#include <dimension/class_dimension.h>
 
 #include <pcbnew.h>
 #include <dialog_dimension_editor_base.h>
@@ -273,56 +273,56 @@ static void AbortBuildDimension( EDA_DRAW_PANEL* Panel, wxDC* aDC )
 
 DIMENSION* PCB_EDIT_FRAME::EditDimension( DIMENSION* aDimension, wxDC* aDC )
 {
-    wxPoint pos;
-
-    if( aDimension == NULL )
-    {
-        status_dimension = 1;
-        pos = GetCrossHairPosition();
-
-        aDimension = new DIMENSION( GetBoard() );
-        aDimension->SetFlags( IS_NEW );
-        aDimension->SetLayer( GetActiveLayer() );
-        aDimension->SetOrigin( pos );
-        aDimension->SetEnd( pos );
-
-        aDimension->Text().SetSize( GetBoard()->GetDesignSettings().m_PcbTextSize );
-        int width = GetBoard()->GetDesignSettings().m_PcbTextWidth;
-        int maxthickness = Clamp_Text_PenSize(width, aDimension->Text().GetSize() );
-
-        if( width > maxthickness )
-        {
-            width = maxthickness;
-        }
-
-        aDimension->Text().SetThickness( width );
-        aDimension->SetWidth( width );
-        aDimension->AdjustDimensionDetails();
-        aDimension->Draw( m_canvas, aDC, GR_XOR );
-
-        m_canvas->SetMouseCapture( BuildDimension, AbortBuildDimension );
-        return aDimension;
-    }
-
-    // Dimension != NULL
-    if( status_dimension == 1 )
-    {
-        status_dimension = 2;
-        return aDimension;
-    }
-
-    aDimension->Draw( m_canvas, aDC, GR_OR );
-    aDimension->ClearFlags();
-
-    /* ADD this new item in list */
-    GetBoard()->Add( aDimension );
-
-    // Add store it in undo/redo list
-    SaveCopyInUndoList( aDimension, UR_NEW );
-
-    OnModify();
-    m_canvas->SetMouseCapture( NULL, NULL );
-
+//    wxPoint pos;
+//
+//    if( aDimension == NULL )
+//    {
+//        status_dimension = 1;
+//        pos = GetCrossHairPosition();
+//
+//        aDimension = new DIMENSION( GetBoard() );
+//        aDimension->SetFlags( IS_NEW );
+//        aDimension->SetLayer( GetActiveLayer() );
+//        aDimension->SetOrigin( pos );
+//        aDimension->SetEnd( pos );
+//
+//        aDimension->Text().SetSize( GetBoard()->GetDesignSettings().m_PcbTextSize );
+//        int width = GetBoard()->GetDesignSettings().m_PcbTextWidth;
+//        int maxthickness = Clamp_Text_PenSize(width, aDimension->Text().GetSize() );
+//
+//        if( width > maxthickness )
+//        {
+//            width = maxthickness;
+//        }
+//
+//        aDimension->Text().SetThickness( width );
+//        aDimension->SetWidth( width );
+//        aDimension->AdjustDimensionDetails();
+//        aDimension->Draw( m_canvas, aDC, GR_XOR );
+//
+//        m_canvas->SetMouseCapture( BuildDimension, AbortBuildDimension );
+//        return aDimension;
+//    }
+//
+//    // Dimension != NULL
+//    if( status_dimension == 1 )
+//    {
+//        status_dimension = 2;
+//        return aDimension;
+//    }
+//
+//    aDimension->Draw( m_canvas, aDC, GR_OR );
+//    aDimension->ClearFlags();
+//
+//    /* ADD this new item in list */
+//    GetBoard()->Add( aDimension );
+//
+//    // Add store it in undo/redo list
+//    SaveCopyInUndoList( aDimension, UR_NEW );
+//
+//    OnModify();
+//    m_canvas->SetMouseCapture( NULL, NULL );
+#warning ("TODO")
     return NULL;
 }
 
@@ -330,38 +330,38 @@ DIMENSION* PCB_EDIT_FRAME::EditDimension( DIMENSION* aDimension, wxDC* aDC )
 static void BuildDimension( EDA_DRAW_PANEL* aPanel, wxDC* aDC,
                             const wxPoint& aPosition, bool aErase )
 {
-    PCB_SCREEN* screen   = (PCB_SCREEN*) aPanel->GetScreen();
-    DIMENSION*  Dimension = (DIMENSION*) screen->GetCurItem();
-    wxPoint     pos = aPanel->GetParent()->GetCrossHairPosition();
-
-    if( Dimension == NULL )
-        return;
-
-    // Erase previous dimension.
-    if( aErase )
-    {
-        Dimension->Draw( aPanel, aDC, GR_XOR );
-    }
-
-    Dimension->SetLayer( screen->m_Active_Layer );
-
-    if( status_dimension == 1 )
-    {
-        Dimension->m_featureLineDO = pos;
-        Dimension->m_crossBarF  = Dimension->m_featureLineDO;
-        Dimension->AdjustDimensionDetails( );
-    }
-    else
-    {
-        /* Calculating the direction of travel perpendicular to the selected axis. */
-        double angle = Dimension->GetAngle() + (M_PI / 2);
-
-        wxPoint delta = pos - Dimension->m_featureLineDO;
-        double depl   = ( delta.x * cos( angle ) ) + ( delta.y * sin( angle ) );
-        Dimension->SetHeight( depl );
-    }
-
-    Dimension->Draw( aPanel, aDC, GR_XOR );
+//    PCB_SCREEN* screen   = (PCB_SCREEN*) aPanel->GetScreen();
+//    DIMENSION*  Dimension = (DIMENSION*) screen->GetCurItem();
+//    wxPoint     pos = aPanel->GetParent()->GetCrossHairPosition();
+//
+//    if( Dimension == NULL )
+//        return;
+//
+//    // Erase previous dimension.
+//    if( aErase )
+//    {
+//        Dimension->Draw( aPanel, aDC, GR_XOR );
+//    }
+//
+//    Dimension->SetLayer( screen->m_Active_Layer );
+//
+//    if( status_dimension == 1 )
+//    {
+//        Dimension->m_featureLineDO = pos;
+//        Dimension->m_crossBarF  = Dimension->m_featureLineDO;
+//        Dimension->AdjustDimensionDetails( );
+//    }
+//    else
+//    {
+//        /* Calculating the direction of travel perpendicular to the selected axis. */
+//        double angle = Dimension->GetAngle() + (M_PI / 2);
+//
+//        wxPoint delta = pos - Dimension->m_featureLineDO;
+//        double depl   = ( delta.x * cos( angle ) ) + ( delta.y * sin( angle ) );
+//        Dimension->SetHeight( depl );
+//    }
+//
+//    Dimension->Draw( aPanel, aDC, GR_XOR );
 }
 
 

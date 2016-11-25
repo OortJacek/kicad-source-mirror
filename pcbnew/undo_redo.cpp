@@ -41,7 +41,7 @@ using namespace std::placeholders;
 #include <class_pcb_text.h>
 #include <class_mire.h>
 #include <class_module.h>
-#include <class_dimension.h>
+#include <dimension/class_dimension.h>
 #include <class_zone.h>
 #include <class_edge_mod.h>
 
@@ -623,7 +623,8 @@ void BOARD_ITEM::SwapData( BOARD_ITEM* aImage )
         break;
 
     case PCB_DIMENSION_T:
-        std::swap( *((DIMENSION*)this), *((DIMENSION*)aImage) );
+#warning ("TODO")
+//        std::swap( *((DIMENSION*)this), *((DIMENSION*)aImage) );
         break;
 
     case PCB_ZONE_T:

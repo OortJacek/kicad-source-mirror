@@ -429,6 +429,12 @@ void PCB_EDIT_FRAME::ReCreateMenuBar()
     AddMenuItem( placeMenu, ID_PCB_DIMENSION_BUTT,
                  _( "&Dimension" ), _( "Add dimension" ),
                  KiBitmap( add_dimension_xpm ) );
+    AddMenuItem( placeMenu, ID_PCB_DIMENSION_BUTT2,
+                 _( "&Dimension" ), _( "Add dimension" ),
+                 KiBitmap( add_dimension_xpm ) );
+    AddMenuItem( placeMenu, ID_PCB_DIMENSION_BUTT3,
+                 _( "&Dimension" ), _( "Add dimension" ),
+                 KiBitmap( add_dimension_xpm ) );
 
     AddMenuItem( placeMenu, ID_PCB_MIRE_BUTT,
                  _( "La&yer alignment target" ), _( "Add layer alignment target" ),

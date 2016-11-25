@@ -35,7 +35,7 @@
 #include <class_title_block.h>
 
 #include <class_board.h>
-#include <class_dimension.h>
+#include <dimension/class_dimension.h>
 #include <class_drawsegment.h>
 #include <class_edge_mod.h>
 #include <class_mire.h>
@@ -516,7 +516,7 @@ BOARD* PCB_PARSER::parseBOARD_unchecked() throw( IO_ERROR, PARSE_ERROR )
             break;
 
         case T_dimension:
-            m_board->Add( parseDIMENSION(), ADD_APPEND );
+//            m_board->Add( parseDIMENSION(), ADD_APPEND );
             break;
 
         case T_module:
@@ -1567,178 +1567,180 @@ TEXTE_PCB* PCB_PARSER::parseTEXTE_PCB() throw( IO_ERROR, PARSE_ERROR )
 
 DIMENSION* PCB_PARSER::parseDIMENSION() throw( IO_ERROR, PARSE_ERROR )
 {
-    wxCHECK_MSG( CurTok() == T_dimension, NULL,
-                 wxT( "Cannot parse " ) + GetTokenString( CurTok() ) + wxT( " as DIMENSION." ) );
-
-    T token;
-
-    std::unique_ptr<DIMENSION> dimension( new DIMENSION( NULL ) );
-
-    dimension->SetValue( parseBoardUnits( "dimension value" ) );
-    NeedLEFT();
-    token = NextTok();
-
-    if( token != T_width )
-        Expecting( T_width );
-
-    dimension->SetWidth( parseBoardUnits( "dimension width value" ) );
-    NeedRIGHT();
-
-    for( token = NextTok();  token != T_RIGHT;  token = NextTok() )
-    {
-        if( token != T_LEFT )
-            Expecting( T_LEFT );
-
-        token = NextTok();
-
-        switch( token )
-        {
-        case T_layer:
-            dimension->SetLayer( parseBoardItemLayer() );
-            NeedRIGHT();
-            break;
-
-        case T_tstamp:
-            dimension->SetTimeStamp( parseHex() );
-            NeedRIGHT();
-            break;
-
-        case T_gr_text:
-        {
-            TEXTE_PCB* text = parseTEXTE_PCB();
-            dimension->Text() = *text;
-            dimension->SetPosition( text->GetTextPosition() );
-            delete text;
-            break;
-        }
-
-        case T_feature1:
-            NeedLEFT();
-            token = NextTok();
-
-            if( token != T_pts )
-                Expecting( T_pts );
-
-            parseXY( &dimension->m_featureLineDO.x, &dimension->m_featureLineDO.y );
-            parseXY( &dimension->m_featureLineDF.x, &dimension->m_featureLineDF.y );
-            dimension->UpdateHeight();
-            NeedRIGHT();
-            NeedRIGHT();
-            break;
-
-        case T_feature2:
-            NeedLEFT();
-            token = NextTok();
-
-            if( token != T_pts )
-                Expecting( T_pts );
-
-            parseXY( &dimension->m_featureLineGO.x, &dimension->m_featureLineGO.y );
-            parseXY( &dimension->m_featureLineGF.x, &dimension->m_featureLineGF.y );
-            dimension->UpdateHeight();
-            NeedRIGHT();
-            NeedRIGHT();
-            break;
-
-
-        case T_crossbar:
-            NeedLEFT();
-            token = NextTok();
-
-            if( token != T_pts )
-                Expecting( T_pts );
-
-            parseXY( &dimension->m_crossBarO.x, &dimension->m_crossBarO.y );
-            parseXY( &dimension->m_crossBarF.x, &dimension->m_crossBarF.y );
-            dimension->UpdateHeight();
-            NeedRIGHT();
-            NeedRIGHT();
-            break;
-
-        case T_arrow1a:
-            NeedLEFT();
-            token = NextTok();
-
-            if( token != T_pts )
-                Expecting( T_pts );
-
-            parseXY( &dimension->m_crossBarF.x, &dimension->m_crossBarF.y );
-            parseXY( &dimension->m_arrowD1F.x, &dimension->m_arrowD1F.y );
-            NeedRIGHT();
-            NeedRIGHT();
-            break;
-
-        case T_arrow1b:
-            NeedLEFT();
-            token = NextTok();
-
-            if( token != T_pts )
-                Expecting( T_pts );
-
-            parseXY( &dimension->m_crossBarF.x, &dimension->m_crossBarF.y );
-            parseXY( &dimension->m_arrowD2F.x, &dimension->m_arrowD2F.y );
-            NeedRIGHT();
-            NeedRIGHT();
-            break;
-
-        case T_arrow2a:
-            NeedLEFT();
-            token = NextTok();
-
-            if( token != T_pts )
-                Expecting( T_pts );
-
-            parseXY( &dimension->m_crossBarO.x, &dimension->m_crossBarO.y );
-            parseXY( &dimension->m_arrowG1F.x, &dimension->m_arrowG1F.y );
-            NeedRIGHT();
-            NeedRIGHT();
-            break;
-
-        case T_arrow2b:
-            NeedLEFT();
-            token = NextTok();
-
-            if( token != T_pts )
-                Expecting( T_pts );
-
-            parseXY( &dimension->m_crossBarO.x, &dimension->m_crossBarO.y );
-            parseXY( &dimension->m_arrowG2F.x, &dimension->m_arrowG2F.y );
-            NeedRIGHT();
-            NeedRIGHT();
-            break;
-
-        case T_outside:
-            dimension->SetOutside(parseBool());
-            NeedRIGHT();
-            break;
-
-        case T_free_text:
-            dimension->SetFreeText(parseBool());
-            NeedRIGHT();
-            break;
-
-        case T_dim_text_pos:
-            NeedLEFT();
-            token = NextTok();
-
-            if( token != T_pts )
-                Expecting( T_pts );
-
-            int x, y;
-            parseXY( &x, &y );
-            dimension->SetTextPosition(wxPoint(x, y));
-            NeedRIGHT();
-            NeedRIGHT();
-            break;
-
-        default:
-            Expecting( "layer, tstamp, gr_text, feature1, feature2 crossbar, arrow1a, "
-                       "arrow1b, arrow2a, or arrow2b" );
-        }
-    }
-
-    dimension->AdjustDimensionDetails(true);
-    return dimension.release();
+//    wxCHECK_MSG( CurTok() == T_dimension, NULL,
+//                 wxT( "Cannot parse " ) + GetTokenString( CurTok() ) + wxT( " as DIMENSION." ) );
+//
+//    T token;
+//
+//    std::unique_ptr<DIMENSION> dimension( new DIMENSION( NULL ) );
+//
+//    dimension->SetValue( parseBoardUnits( "dimension value" ) );
+//    NeedLEFT();
+//    token = NextTok();
+//
+//    if( token != T_width )
+//        Expecting( T_width );
+//
+//    dimension->SetWidth( parseBoardUnits( "dimension width value" ) );
+//    NeedRIGHT();
+//
+//    for( token = NextTok();  token != T_RIGHT;  token = NextTok() )
+//    {
+//        if( token != T_LEFT )
+//            Expecting( T_LEFT );
+//
+//        token = NextTok();
+//
+//        switch( token )
+//        {
+//        case T_layer:
+//            dimension->SetLayer( parseBoardItemLayer() );
+//            NeedRIGHT();
+//            break;
+//
+//        case T_tstamp:
+//            dimension->SetTimeStamp( parseHex() );
+//            NeedRIGHT();
+//            break;
+//
+//        case T_gr_text:
+//        {
+//            TEXTE_PCB* text = parseTEXTE_PCB();
+//            dimension->Text() = *text;
+//            dimension->SetPosition( text->GetTextPosition() );
+//            delete text;
+//            break;
+//        }
+//
+//        case T_feature1:
+//            NeedLEFT();
+//            token = NextTok();
+//
+//            if( token != T_pts )
+//                Expecting( T_pts );
+//
+//            parseXY( &dimension->m_featureLineDO.x, &dimension->m_featureLineDO.y );
+//            parseXY( &dimension->m_featureLineDF.x, &dimension->m_featureLineDF.y );
+//            dimension->UpdateHeight();
+//            NeedRIGHT();
+//            NeedRIGHT();
+//            break;
+//
+//        case T_feature2:
+//            NeedLEFT();
+//            token = NextTok();
+//
+//            if( token != T_pts )
+//                Expecting( T_pts );
+//
+//            parseXY( &dimension->m_featureLineGO.x, &dimension->m_featureLineGO.y );
+//            parseXY( &dimension->m_featureLineGF.x, &dimension->m_featureLineGF.y );
+//            dimension->UpdateHeight();
+//            NeedRIGHT();
+//            NeedRIGHT();
+//            break;
+//
+//
+//        case T_crossbar:
+//            NeedLEFT();
+//            token = NextTok();
+//
+//            if( token != T_pts )
+//                Expecting( T_pts );
+//
+//            parseXY( &dimension->m_crossBarO.x, &dimension->m_crossBarO.y );
+//            parseXY( &dimension->m_crossBarF.x, &dimension->m_crossBarF.y );
+//            dimension->UpdateHeight();
+//            NeedRIGHT();
+//            NeedRIGHT();
+//            break;
+//
+//        case T_arrow1a:
+//            NeedLEFT();
+//            token = NextTok();
+//
+//            if( token != T_pts )
+//                Expecting( T_pts );
+//
+//            parseXY( &dimension->m_crossBarF.x, &dimension->m_crossBarF.y );
+//            parseXY( &dimension->m_arrowD1F.x, &dimension->m_arrowD1F.y );
+//            NeedRIGHT();
+//            NeedRIGHT();
+//            break;
+//
+//        case T_arrow1b:
+//            NeedLEFT();
+//            token = NextTok();
+//
+//            if( token != T_pts )
+//                Expecting( T_pts );
+//
+//            parseXY( &dimension->m_crossBarF.x, &dimension->m_crossBarF.y );
+//            parseXY( &dimension->m_arrowD2F.x, &dimension->m_arrowD2F.y );
+//            NeedRIGHT();
+//            NeedRIGHT();
+//            break;
+//
+//        case T_arrow2a:
+//            NeedLEFT();
+//            token = NextTok();
+//
+//            if( token != T_pts )
+//                Expecting( T_pts );
+//
+//            parseXY( &dimension->m_crossBarO.x, &dimension->m_crossBarO.y );
+//            parseXY( &dimension->m_arrowG1F.x, &dimension->m_arrowG1F.y );
+//            NeedRIGHT();
+//            NeedRIGHT();
+//            break;
+//
+//        case T_arrow2b:
+//            NeedLEFT();
+//            token = NextTok();
+//
+//            if( token != T_pts )
+//                Expecting( T_pts );
+//
+//            parseXY( &dimension->m_crossBarO.x, &dimension->m_crossBarO.y );
+//            parseXY( &dimension->m_arrowG2F.x, &dimension->m_arrowG2F.y );
+//            NeedRIGHT();
+//            NeedRIGHT();
+//            break;
+//
+//        case T_outside:
+//            dimension->SetOutside(parseBool());
+//            NeedRIGHT();
+//            break;
+//
+//        case T_free_text:
+//            dimension->SetFreeText(parseBool());
+//            NeedRIGHT();
+//            break;
+//
+//        case T_dim_text_pos:
+//            NeedLEFT();
+//            token = NextTok();
+//
+//            if( token != T_pts )
+//                Expecting( T_pts );
+//
+//            int x, y;
+//            parseXY( &x, &y );
+//            dimension->SetTextPosition(wxPoint(x, y));
+//            NeedRIGHT();
+//            NeedRIGHT();
+//            break;
+//
+//        default:
+//            Expecting( "layer, tstamp, gr_text, feature1, feature2 crossbar, arrow1a, "
+//                       "arrow1b, arrow2a, or arrow2b" );
+//        }
+//    }
+//
+//    dimension->AdjustDimensionDetails(true);
+//    return dimension.release();
+#warning ("TODO")
+    return nullptr;
 }
 
 

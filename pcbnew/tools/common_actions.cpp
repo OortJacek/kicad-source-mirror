@@ -163,6 +163,12 @@ TOOL_ACTION COMMON_ACTIONS::placeText( "pcbnew.InteractiveDrawing.text",
 TOOL_ACTION COMMON_ACTIONS::drawDimension( "pcbnew.InteractiveDrawing.dimension",
         AS_GLOBAL, 0,
         _( "Add a dimension" ), _( "Add a dimension" ), NULL, AF_ACTIVATE );
+TOOL_ACTION COMMON_ACTIONS::drawDimension2( "pcbnew.InteractiveDrawing.dimension2",
+        AS_GLOBAL, 0,
+        _( "Add a dimension" ), _( "Add a dimension" ), NULL, AF_ACTIVATE );
+TOOL_ACTION COMMON_ACTIONS::drawDimension3( "pcbnew.InteractiveDrawing.dimension3",
+        AS_GLOBAL, 0,
+        _( "Add a dimension" ), _( "Add a dimension" ), NULL, AF_ACTIVATE );
 
 TOOL_ACTION COMMON_ACTIONS::drawZone( "pcbnew.InteractiveDrawing.zone",
         AS_GLOBAL, 0,
@@ -660,6 +666,10 @@ boost::optional<TOOL_EVENT> COMMON_ACTIONS::TranslateLegacyId( int aId )
 
     case ID_PCB_DIMENSION_BUTT:
         return COMMON_ACTIONS::drawDimension.MakeEvent();
+    case ID_PCB_DIMENSION_BUTT2:
+        return COMMON_ACTIONS::drawDimension2.MakeEvent();
+    case ID_PCB_DIMENSION_BUTT3:
+        return COMMON_ACTIONS::drawDimension3.MakeEvent();
 
     case ID_PCB_MIRE_BUTT:
         return COMMON_ACTIONS::placeTarget.MakeEvent();

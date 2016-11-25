@@ -44,7 +44,7 @@
 #include <class_zone.h>
 #include <class_drawsegment.h>
 #include <class_mire.h>
-#include <class_dimension.h>
+#include <dimension/class_dimension.h>
 
 #include <pcbnew.h>
 #include <pcbplot.h>
@@ -352,33 +352,35 @@ void BRDITEMS_PLOTTER::PlotDimension( DIMENSION* aDim )
 
     PlotTextePcb( &aDim->Text() );
 
-    draw.SetStart( aDim->m_crossBarO );
-    draw.SetEnd( aDim->m_crossBarF );
-    PlotDrawSegment( &draw );
+#warning ("TODO")
 
-    draw.SetStart( aDim->m_featureLineGO);
-    draw.SetEnd( aDim->m_featureLineGF );
-    PlotDrawSegment( &draw );
-
-    draw.SetStart( aDim->m_featureLineDO );
-    draw.SetEnd( aDim->m_featureLineDF );
-    PlotDrawSegment( &draw );
-
-    draw.SetStart( aDim->m_crossBarF );
-    draw.SetEnd( aDim->m_arrowD1F );
-    PlotDrawSegment( &draw );
-
-    draw.SetStart( aDim->m_crossBarF );
-    draw.SetEnd( aDim->m_arrowD2F );
-    PlotDrawSegment( &draw );
-
-    draw.SetStart( aDim->m_crossBarO );
-    draw.SetEnd( aDim->m_arrowG1F );
-    PlotDrawSegment( &draw );
-
-    draw.SetStart( aDim->m_crossBarO );
-    draw.SetEnd( aDim->m_arrowG2F );
-    PlotDrawSegment( &draw );
+//    draw.SetStart( aDim->m_crossBarO );
+//    draw.SetEnd( aDim->m_crossBarF );
+//    PlotDrawSegment( &draw );
+//
+//    draw.SetStart( aDim->m_featureLineGO);
+//    draw.SetEnd( aDim->m_featureLineGF );
+//    PlotDrawSegment( &draw );
+//
+//    draw.SetStart( aDim->m_featureLineDO );
+//    draw.SetEnd( aDim->m_featureLineDF );
+//    PlotDrawSegment( &draw );
+//
+//    draw.SetStart( aDim->m_crossBarF );
+//    draw.SetEnd( aDim->m_arrowD1F );
+//    PlotDrawSegment( &draw );
+//
+//    draw.SetStart( aDim->m_crossBarF );
+//    draw.SetEnd( aDim->m_arrowD2F );
+//    PlotDrawSegment( &draw );
+//
+//    draw.SetStart( aDim->m_crossBarO );
+//    draw.SetEnd( aDim->m_arrowG1F );
+//    PlotDrawSegment( &draw );
+//
+//    draw.SetStart( aDim->m_crossBarO );
+//    draw.SetEnd( aDim->m_arrowG2F );
+//    PlotDrawSegment( &draw );
 }
 
 

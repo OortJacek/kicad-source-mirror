@@ -42,7 +42,7 @@
 #include <class_pcb_text.h>
 #include <class_mire.h>
 #include <class_module.h>
-#include <class_dimension.h>
+#include <dimension/class_dimension.h>
 #include <class_zone.h>
 
 #include <dialog_block_options_base.h>

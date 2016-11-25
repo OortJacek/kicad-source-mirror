@@ -46,9 +46,11 @@
 #include <class_board.h>
 #include <class_edge_mod.h>
 #include <class_pcb_text.h>
-#include <class_dimension.h>
 #include <class_zone.h>
 #include <class_module.h>
+
+#include <dimension/class_dimension.h>
+#include <boost/optional/optional_io.hpp>
 
 DRAWING_TOOL::DRAWING_TOOL() :
     PCB_TOOL( "pcbnew.InteractiveDrawing" ), m_view( NULL ),
@@ -321,6 +323,8 @@ int DRAWING_TOOL::PlaceText( const TOOL_EVENT& aEvent )
 
 int DRAWING_TOOL::DrawDimension( const TOOL_EVENT& aEvent )
 {
+    std::cout << "drawing_tool.cpp:325 DrawDimension:" <<aEvent.GetCommandStr() << std::endl;
+
     DIMENSION* dimension = NULL;
     BOARD_COMMIT commit( m_frame );
     int maxThickness;
@@ -336,16 +340,10 @@ int DRAWING_TOOL::DrawDimension( const TOOL_EVENT& aEvent )
     Activate();
     m_frame->SetToolID( ID_PCB_DIMENSION_BUTT, wxCURSOR_PENCIL, _( "Add dimension" ) );
 
-    enum DIMENSION_STEPS
-    {
-        SET_ORIGIN = 0,
-        SET_END,
-        SET_HEIGHT,
-        FINISHED
-    };
+    const int SET_ORIGIN = 0;
+    const int FINISHED = 0;
     int step = SET_ORIGIN;
 
-    // Main loop: keep receiving events
     while( OPT_TOOL_EVENT evt = Wait() )
     {
         VECTOR2I cursorPos = m_controls->GetCursorPosition();
@@ -365,125 +363,7 @@ int DRAWING_TOOL::DrawDimension( const TOOL_EVENT& aEvent )
             if( evt->IsActivate() )  // now finish unconditionally
                 break;
         }
-
-        else if( evt->IsAction( &COMMON_ACTIONS::incWidth ) && step != SET_ORIGIN )
-        {
-            dimension->SetWidth( dimension->GetWidth() + WIDTH_STEP );
-            preview.ViewUpdate( KIGFX::VIEW_ITEM::GEOMETRY );
-        }
-
-        else if( evt->IsAction( &COMMON_ACTIONS::decWidth ) && step != SET_ORIGIN )
-        {
-            int width = dimension->GetWidth();
-
-            if( width > WIDTH_STEP )
-            {
-                dimension->SetWidth( width - WIDTH_STEP );
-                preview.ViewUpdate( KIGFX::VIEW_ITEM::GEOMETRY );
-            }
-        }
-
-        else if( evt->IsClick( BUT_LEFT ) )
-        {
-            switch( step )
-            {
-            case SET_ORIGIN:
-                {
-                    LAYER_ID layer = m_frame->GetScreen()->m_Active_Layer;
-
-                    if( IsCopperLayer( layer ) || layer == Edge_Cuts )
-                    {
-                        DisplayInfoMessage( NULL, _( "Dimension not allowed on Copper or Edge Cut layers" ) );
-                        --step;
-                    }
-                    else
-                    {
-                        // Init the new item attributes
-                        dimension = new DIMENSION( m_board );
-                        dimension->SetLayer( layer );
-                        dimension->SetOrigin( wxPoint( cursorPos.x, cursorPos.y ) );
-                        dimension->SetEnd( wxPoint( cursorPos.x, cursorPos.y ) );
-                        dimension->Text().SetSize( m_board->GetDesignSettings().m_PcbTextSize );
-
-                        int width = m_board->GetDesignSettings().m_PcbTextWidth;
-                        maxThickness = Clamp_Text_PenSize( width, dimension->Text().GetSize() );
-
-                        if( width > maxThickness )
-                            width = maxThickness;
-
-                        dimension->Text().SetThickness( width );
-                        dimension->SetWidth( width );
-                        dimension->AdjustDimensionDetails();
-
-                        preview.Add( dimension );
-
-                        m_controls->SetAutoPan( true );
-                        m_controls->CaptureCursor( true );
-                    }
-                }
-                break;
-
-            case SET_END:
-                dimension->SetEnd( wxPoint( cursorPos.x, cursorPos.y ) );
-
-                // Dimensions that have origin and end in the same spot are not valid
-                if( dimension->GetOrigin() == dimension->GetEnd() )
-                    --step;
-                break;
-
-            case SET_HEIGHT:
-                {
-                    if( wxPoint( cursorPos.x, cursorPos.y ) != dimension->GetPosition() )
-                    {
-                        assert( dimension->GetOrigin() != dimension->GetEnd() );
-                        assert( dimension->GetWidth() > 0 );
-
-                        preview.Remove( dimension );
-
-                        commit.Add( dimension );
-                        commit.Push( _( "Draw a dimension" ) );
-
-                    }
-                }
-                break;
-            }
-
-            if( ++step == FINISHED )
-            {
-                step = SET_ORIGIN;
-                m_controls->SetAutoPan( false );
-                m_controls->CaptureCursor( false );
-            }
-        }
-
-        else if( evt->IsMotion() )
-        {
-            switch( step )
-            {
-            case SET_END:
-                dimension->SetEnd( wxPoint( cursorPos.x, cursorPos.y ) );
-                break;
-
-            case SET_HEIGHT:
-            {
-                // Calculating the direction of travel perpendicular to the selected axis
-                double angle = dimension->GetAngle() + ( M_PI / 2 );
-
-                wxPoint pos( cursorPos.x, cursorPos.y );
-                wxPoint delta( pos - dimension->m_featureLineDO );
-                double height  = ( delta.x * cos( angle ) ) + ( delta.y * sin( angle ) );
-                dimension->SetHeight( height );
-            }
-            break;
-            }
-
-            // Show a preview of the item
-            preview.ViewUpdate( KIGFX::VIEW_ITEM::GEOMETRY );
-        }
     }
-
-    if( step != SET_ORIGIN )
-        delete dimension;
 
     m_controls->ShowCursor( false );
     m_controls->SetSnapping( false );
@@ -1336,6 +1216,8 @@ void DRAWING_TOOL::SetTransitions()
     Go( &DRAWING_TOOL::DrawCircle,       COMMON_ACTIONS::drawCircle.MakeEvent() );
     Go( &DRAWING_TOOL::DrawArc,          COMMON_ACTIONS::drawArc.MakeEvent() );
     Go( &DRAWING_TOOL::DrawDimension,    COMMON_ACTIONS::drawDimension.MakeEvent() );
+    Go( &DRAWING_TOOL::DrawDimension,    COMMON_ACTIONS::drawDimension2.MakeEvent() );
+    Go( &DRAWING_TOOL::DrawDimension,    COMMON_ACTIONS::drawDimension3.MakeEvent() );
     Go( &DRAWING_TOOL::DrawZone,         COMMON_ACTIONS::drawZone.MakeEvent() );
     Go( &DRAWING_TOOL::DrawKeepout,      COMMON_ACTIONS::drawKeepout.MakeEvent() );
     Go( &DRAWING_TOOL::PlaceText,        COMMON_ACTIONS::placeText.MakeEvent() );

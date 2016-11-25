@@ -33,7 +33,7 @@
 #include <class_board.h>
 #include <class_module.h>
 #include <class_pcb_text.h>
-#include <class_dimension.h>
+#include <dimension/class_dimension.h>
 #include <class_track.h>
 #include <class_zone.h>
 #include <class_drawsegment.h>
@@ -772,72 +772,73 @@ void PCB_IO::format( BOARD* aBoard, int aNestLevel ) const
 void PCB_IO::format( DIMENSION* aDimension, int aNestLevel ) const
     throw( IO_ERROR )
 {
-    m_out->Print( aNestLevel, "(dimension %s (width %s)",
-                  FMT_IU( aDimension->GetValue() ).c_str(),
-                  FMT_IU( aDimension->GetWidth() ).c_str() );
-
-    formatLayer( aDimension );
-
-    if( aDimension->GetTimeStamp() )
-        m_out->Print( 0, " (tstamp %lX)", (unsigned long)aDimension->GetTimeStamp() );
-
-    m_out->Print( 0, "\n" );
-
-    Format( &aDimension->Text(), aNestLevel+1 );
-
-    m_out->Print( aNestLevel+1, "(feature1 (pts (xy %s %s) (xy %s %s)))\n",
-                  FMT_IU( aDimension->m_featureLineDO.x ).c_str(),
-                  FMT_IU( aDimension->m_featureLineDO.y ).c_str(),
-                  FMT_IU( aDimension->m_featureLineDF.x ).c_str(),
-                  FMT_IU( aDimension->m_featureLineDF.y ).c_str() );
-
-    m_out->Print( aNestLevel+1, "(feature2 (pts (xy %s %s) (xy %s %s)))\n",
-                  FMT_IU( aDimension->m_featureLineGO.x ).c_str(),
-                  FMT_IU( aDimension->m_featureLineGO.y ).c_str(),
-                  FMT_IU( aDimension->m_featureLineGF.x ).c_str(),
-                  FMT_IU( aDimension->m_featureLineGF.y ).c_str() );
-
-    m_out->Print( aNestLevel+1, "(crossbar (pts (xy %s %s) (xy %s %s)))\n",
-                  FMT_IU( aDimension->m_crossBarO.x ).c_str(),
-                  FMT_IU( aDimension->m_crossBarO.y ).c_str(),
-                  FMT_IU( aDimension->m_crossBarF.x ).c_str(),
-                  FMT_IU( aDimension->m_crossBarF.y ).c_str() );
-
-    m_out->Print( aNestLevel+1, "(arrow1a (pts (xy %s %s) (xy %s %s)))\n",
-                  FMT_IU( aDimension->m_crossBarF.x ).c_str(),
-                  FMT_IU( aDimension->m_crossBarF.y ).c_str(),
-                  FMT_IU( aDimension->m_arrowD1F.x ).c_str(),
-                  FMT_IU( aDimension->m_arrowD1F.y ).c_str() );
-
-    m_out->Print( aNestLevel+1, "(arrow1b (pts (xy %s %s) (xy %s %s)))\n",
-                  FMT_IU( aDimension->m_crossBarF.x ).c_str(),
-                  FMT_IU( aDimension->m_crossBarF.y ).c_str(),
-                  FMT_IU( aDimension->m_arrowD2F.x ).c_str(),
-                  FMT_IU( aDimension->m_arrowD2F.y ).c_str() );
-
-    m_out->Print( aNestLevel+1, "(arrow2a (pts (xy %s %s) (xy %s %s)))\n",
-                  FMT_IU( aDimension->m_crossBarO.x ).c_str(),
-                  FMT_IU( aDimension->m_crossBarO.y ).c_str(),
-                  FMT_IU( aDimension->m_arrowG1F.x ).c_str(),
-                  FMT_IU( aDimension->m_arrowG1F.y ).c_str() );
-
-    m_out->Print( aNestLevel+1, "(arrow2b (pts (xy %s %s) (xy %s %s)))\n",
-                  FMT_IU( aDimension->m_crossBarO.x ).c_str(),
-                  FMT_IU( aDimension->m_crossBarO.y ).c_str(),
-                  FMT_IU( aDimension->m_arrowG2F.x ).c_str(),
-                  FMT_IU( aDimension->m_arrowG2F.y ).c_str() );
-
-    m_out->Print( aNestLevel+1, "(dim_text_pos (pts (xy %s %s)))\n",
-				  FMT_IU( aDimension->GetTextPosition().x ).c_str(),
-				  FMT_IU( aDimension->GetTextPosition().y ).c_str() );
-
-    m_out->Print( aNestLevel+1, "(free_text %s)\n",
-                      ( aDimension->IsFreeText() ) ? "yes" : "no" );
-
-    m_out->Print( aNestLevel+1, "(outside %s)\n",
-                      ( aDimension->IsOutside() ) ? "yes" : "no" );
-
-    m_out->Print( aNestLevel, ")\n" );
+#warning ("TODO")
+//    m_out->Print( aNestLevel, "(dimension %s (width %s)",
+//                  FMT_IU( aDimension->GetValue() ).c_str(),
+//                  FMT_IU( aDimension->GetWidth() ).c_str() );
+//
+//    formatLayer( aDimension );
+//
+//    if( aDimension->GetTimeStamp() )
+//        m_out->Print( 0, " (tstamp %lX)", (unsigned long)aDimension->GetTimeStamp() );
+//
+//    m_out->Print( 0, "\n" );
+//
+//    Format( &aDimension->Text(), aNestLevel+1 );
+//
+//    m_out->Print( aNestLevel+1, "(feature1 (pts (xy %s %s) (xy %s %s)))\n",
+//                  FMT_IU( aDimension->m_featureLineDO.x ).c_str(),
+//                  FMT_IU( aDimension->m_featureLineDO.y ).c_str(),
+//                  FMT_IU( aDimension->m_featureLineDF.x ).c_str(),
+//                  FMT_IU( aDimension->m_featureLineDF.y ).c_str() );
+//
+//    m_out->Print( aNestLevel+1, "(feature2 (pts (xy %s %s) (xy %s %s)))\n",
+//                  FMT_IU( aDimension->m_featureLineGO.x ).c_str(),
+//                  FMT_IU( aDimension->m_featureLineGO.y ).c_str(),
+//                  FMT_IU( aDimension->m_featureLineGF.x ).c_str(),
+//                  FMT_IU( aDimension->m_featureLineGF.y ).c_str() );
+//
+//    m_out->Print( aNestLevel+1, "(crossbar (pts (xy %s %s) (xy %s %s)))\n",
+//                  FMT_IU( aDimension->m_crossBarO.x ).c_str(),
+//                  FMT_IU( aDimension->m_crossBarO.y ).c_str(),
+//                  FMT_IU( aDimension->m_crossBarF.x ).c_str(),
+//                  FMT_IU( aDimension->m_crossBarF.y ).c_str() );
+//
+//    m_out->Print( aNestLevel+1, "(arrow1a (pts (xy %s %s) (xy %s %s)))\n",
+//                  FMT_IU( aDimension->m_crossBarF.x ).c_str(),
+//                  FMT_IU( aDimension->m_crossBarF.y ).c_str(),
+//                  FMT_IU( aDimension->m_arrowD1F.x ).c_str(),
+//                  FMT_IU( aDimension->m_arrowD1F.y ).c_str() );
+//
+//    m_out->Print( aNestLevel+1, "(arrow1b (pts (xy %s %s) (xy %s %s)))\n",
+//                  FMT_IU( aDimension->m_crossBarF.x ).c_str(),
+//                  FMT_IU( aDimension->m_crossBarF.y ).c_str(),
+//                  FMT_IU( aDimension->m_arrowD2F.x ).c_str(),
+//                  FMT_IU( aDimension->m_arrowD2F.y ).c_str() );
+//
+//    m_out->Print( aNestLevel+1, "(arrow2a (pts (xy %s %s) (xy %s %s)))\n",
+//                  FMT_IU( aDimension->m_crossBarO.x ).c_str(),
+//                  FMT_IU( aDimension->m_crossBarO.y ).c_str(),
+//                  FMT_IU( aDimension->m_arrowG1F.x ).c_str(),
+//                  FMT_IU( aDimension->m_arrowG1F.y ).c_str() );
+//
+//    m_out->Print( aNestLevel+1, "(arrow2b (pts (xy %s %s) (xy %s %s)))\n",
+//                  FMT_IU( aDimension->m_crossBarO.x ).c_str(),
+//                  FMT_IU( aDimension->m_crossBarO.y ).c_str(),
+//                  FMT_IU( aDimension->m_arrowG2F.x ).c_str(),
+//                  FMT_IU( aDimension->m_arrowG2F.y ).c_str() );
+//
+//    m_out->Print( aNestLevel+1, "(dim_text_pos (pts (xy %s %s)))\n",
+//				  FMT_IU( aDimension->GetTextPosition().x ).c_str(),
+//				  FMT_IU( aDimension->GetTextPosition().y ).c_str() );
+//
+//    m_out->Print( aNestLevel+1, "(free_text %s)\n",
+//                      ( aDimension->IsFreeText() ) ? "yes" : "no" );
+//
+//    m_out->Print( aNestLevel+1, "(outside %s)\n",
+//                      ( aDimension->IsOutside() ) ? "yes" : "no" );
+//
+//    m_out->Print( aNestLevel, ")\n" );
 }
 
 

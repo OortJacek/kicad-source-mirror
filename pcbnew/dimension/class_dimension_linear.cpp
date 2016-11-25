@@ -28,6 +28,8 @@
  * @file class_dimension.cpp
  */
 
+#include <class_dimension_linear.h>
+
 #include <fctsys.h>
 #include <macros.h>
 #include <gr_basic.h>
@@ -40,59 +42,23 @@
 
 #include <class_board.h>
 #include <class_pcb_text.h>
-#include <class_dimension.h>
 #include <base_units.h>
 
 
-DIMENSION::DIMENSION( BOARD_ITEM* aParent ) :
-    BOARD_ITEM( aParent, PCB_DIMENSION_T ),
-    m_Width( Millimeter2iu( 0.2 ) ), m_Unit( INCHES ), m_Value( 0 ), m_Height( 0 ), m_Text( this )
+DIMENSION_LINEAR::DIMENSION_LINEAR( BOARD_ITEM* aParent ) :
+    DIMENSION( aParent )
 {
-    m_Layer = Dwgs_User;
-    m_Shape = DIM_NO_SHAPE;
-    m_outside = false;
-    m_FreeText = false;
+    m_Shape = DIM_LINEAR;
+    m_DrawingPointsNumber = 3;
 }
 
 
-DIMENSION::~DIMENSION()
+DIMENSION_LINEAR::~DIMENSION_LINEAR()
 {
 }
 
 
-void DIMENSION::SetPosition( const wxPoint& aPos )
-{
-    m_Text.SetTextPosition( aPos );
-}
-
-
-const wxPoint& DIMENSION::GetPosition() const
-{
-    return m_Text.GetTextPosition();
-}
-
-
-void DIMENSION::SetText( const wxString& aNewText )
-{
-    m_Text.SetText( aNewText );
-}
-
-
-const wxString DIMENSION::GetText() const
-{
-    return m_Text.GetText();
-}
-
-
-void DIMENSION::SetLayer( LAYER_ID aLayer )
-{
-    m_Layer = aLayer;
-    m_Text.SetLayer( aLayer );
-
-}
-
-
-void DIMENSION::Move( const wxPoint& offset )
+void DIMENSION_LINEAR::Move( const wxPoint& offset )
 {
     m_Text.SetTextPosition( m_Text.GetTextPosition() + offset );
     m_crossBarO     += offset;
@@ -110,7 +76,7 @@ void DIMENSION::Move( const wxPoint& offset )
 }
 
 
-void DIMENSION::Rotate( const wxPoint& aRotCentre, double aAngle )
+void DIMENSION_LINEAR::Rotate( const wxPoint& aRotCentre, double aAngle )
 {
     wxPoint tmp = m_Text.GetTextPosition();
     RotatePoint( &tmp, aRotCentre, aAngle );
@@ -141,17 +107,17 @@ void DIMENSION::Rotate( const wxPoint& aRotCentre, double aAngle )
 }
 
 
-void DIMENSION::Flip( const wxPoint& aCentre )
+void DIMENSION_LINEAR::Flip( const wxPoint& aCentre )
 {
     Mirror( aCentre );
 
-    // DIMENSION items are not usually on copper layers, so
+    // DIMENSION_LINEAR items are not usually on copper layers, so
     // copper layers count is not taken in accoun in Flip transform
     SetLayer( FlipLayer( GetLayer() ) );
 }
 
 
-void DIMENSION::Mirror( const wxPoint& axis_pos )
+void DIMENSION_LINEAR::Mirror( const wxPoint& axis_pos )
 {
     wxPoint newPos = m_Text.GetTextPosition();
 
@@ -175,7 +141,7 @@ void DIMENSION::Mirror( const wxPoint& axis_pos )
     INVERT( m_arrowD2F.y );
 }
 
-void DIMENSION::SetTextPosition( const wxPoint& aPosition)
+void DIMENSION_LINEAR::SetTextPosition( const wxPoint& aPosition)
 {
 	if(IsFreeText())
 	{
@@ -183,14 +149,14 @@ void DIMENSION::SetTextPosition( const wxPoint& aPosition)
 	}
 }
 
-void DIMENSION::SetOrigin( const wxPoint& aOrigin )
+void DIMENSION_LINEAR::SetOrigin( const wxPoint& aOrigin )
 {
     m_featureLineGO = aOrigin;
     AdjustDimensionDetails();
 }
 
 
-void DIMENSION::SetEnd( const wxPoint& aEnd )
+void DIMENSION_LINEAR::SetEnd( const wxPoint& aEnd )
 {
     m_featureLineDO = aEnd;
     AdjustDimensionDetails();
@@ -198,19 +164,19 @@ void DIMENSION::SetEnd( const wxPoint& aEnd )
 }
 
 
-void DIMENSION::SetHeight( int aHeight )
+void DIMENSION_LINEAR::SetHeight( int aHeight )
 {
     m_Height = aHeight;
     AdjustDimensionDetails();
 }
 
-void DIMENSION::SetOutside( bool aOutside)
+void DIMENSION_LINEAR::SetOutside( bool aOutside)
 {
 	m_outside = aOutside;
     AdjustDimensionDetails();
 }
 
-void DIMENSION::SetFreeText( bool aFreeText )
+void DIMENSION_LINEAR::SetFreeText( bool aFreeText )
 {
 	m_FreeText = aFreeText;
 	if(!m_FreeText)
@@ -219,7 +185,7 @@ void DIMENSION::SetFreeText( bool aFreeText )
 
 
 
-void DIMENSION::UpdateHeight()
+void DIMENSION_LINEAR::UpdateHeight()
 {
     VECTOR2D featureLine( m_crossBarO - m_featureLineGO );
     VECTOR2D crossBar( m_featureLineDO - m_featureLineGO );
@@ -231,7 +197,7 @@ void DIMENSION::UpdateHeight()
 }
 
 
-void DIMENSION::AdjustDimensionDetails( bool aDoNotChangeText )
+void DIMENSION_LINEAR::AdjustDimensionDetails( bool aDoNotChangeText )
 {
     const int   arrowz = Mils2iu( 50 );             // size of arrows
     const int	arrowt = Mils2iu( 70 );			// size of arrow tail
@@ -356,7 +322,7 @@ void DIMENSION::AdjustDimensionDetails( bool aDoNotChangeText )
 }
 
 
-void DIMENSION::Draw( EDA_DRAW_PANEL* panel, wxDC* DC, GR_DRAWMODE mode_color,
+void DIMENSION_LINEAR::Draw( EDA_DRAW_PANEL* panel, wxDC* DC, GR_DRAWMODE mode_color,
                       const wxPoint& offset )
 {
     EDA_COLOR_T gcolor;
@@ -412,14 +378,14 @@ void DIMENSION::Draw( EDA_DRAW_PANEL* panel, wxDC* DC, GR_DRAWMODE mode_color,
 
 
 // see class_cotation.h
-void DIMENSION::GetMsgPanelInfo( std::vector< MSG_PANEL_ITEM >& aList )
+void DIMENSION_LINEAR::GetMsgPanelInfo( std::vector< MSG_PANEL_ITEM >& aList )
 {
-    // for now, display only the text within the DIMENSION using class TEXTE_PCB.
+    // for now, display only the text within the DIMENSION_LINEAR using class TEXTE_PCB.
     m_Text.GetMsgPanelInfo( aList );
 }
 
 
-bool DIMENSION::HitTest( const wxPoint& aPosition ) const
+bool DIMENSION_LINEAR::HitTest( const wxPoint& aPosition ) const
 {
     if( m_Text.TextHitTest( aPosition ) )
         return true;
@@ -453,7 +419,7 @@ bool DIMENSION::HitTest( const wxPoint& aPosition ) const
 }
 
 
-bool DIMENSION::HitTest( const EDA_RECT& aRect, bool aContained, int aAccuracy ) const
+bool DIMENSION_LINEAR::HitTest( const EDA_RECT& aRect, bool aContained, int aAccuracy ) const
 {
     EDA_RECT arect = aRect;
     arect.Inflate( aAccuracy );
@@ -469,7 +435,7 @@ bool DIMENSION::HitTest( const EDA_RECT& aRect, bool aContained, int aAccuracy )
 }
 
 
-const EDA_RECT DIMENSION::GetBoundingBox() const
+const EDA_RECT DIMENSION_LINEAR::GetBoundingBox() const
 {
     EDA_RECT    bBox;
     int         xmin, xmax, ymin, ymax;
@@ -518,7 +484,7 @@ const EDA_RECT DIMENSION::GetBoundingBox() const
 }
 
 
-wxString DIMENSION::GetSelectMenuText() const
+wxString DIMENSION_LINEAR::GetSelectMenuText() const
 {
     wxString text;
     text.Printf( _( "Dimension \"%s\" on %s" ),
@@ -528,7 +494,7 @@ wxString DIMENSION::GetSelectMenuText() const
 }
 
 
-const BOX2I DIMENSION::ViewBBox() const
+const BOX2I DIMENSION_LINEAR::ViewBBox() const
 {
     BOX2I dimBBox = BOX2I( VECTOR2I( GetBoundingBox().GetPosition() ),
                            VECTOR2I( GetBoundingBox().GetSize() ) );
@@ -538,7 +504,7 @@ const BOX2I DIMENSION::ViewBBox() const
 }
 
 
-EDA_ITEM* DIMENSION::Clone() const
+EDA_ITEM* DIMENSION_LINEAR::Clone() const
 {
-    return new DIMENSION( *this );
+    return new DIMENSION_LINEAR( *this );
 }

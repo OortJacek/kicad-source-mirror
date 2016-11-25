@@ -57,7 +57,7 @@
 #include <class_drawsegment.h>
 #include <class_pcb_text.h>
 #include <class_mire.h>
-#include <class_dimension.h>
+#include <dimension/class_dimension.h>
 
 
 /* This is an odd place for this, but CvPcb won't link if it is

@@ -1507,6 +1507,8 @@ void PCB_EDIT_FRAME::OnSelectTool( wxCommandEvent& aEvent )
         break;
 
     case ID_PCB_DIMENSION_BUTT:
+    case ID_PCB_DIMENSION_BUTT2:
+    case ID_PCB_DIMENSION_BUTT3:
         SetToolID( id, wxCURSOR_PENCIL, _( "Add dimension" ) );
         break;
 

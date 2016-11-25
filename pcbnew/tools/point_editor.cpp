@@ -38,7 +38,7 @@ using namespace std::placeholders;
 
 #include <wxPcbStruct.h>
 #include <class_edge_mod.h>
-#include <class_dimension.h>
+#include <dimension/class_dimension.h>
 #include <class_zone.h>
 #include <class_board.h>
 #include <class_module.h>
@@ -158,19 +158,20 @@ public:
 
             case PCB_DIMENSION_T:
             {
-                const DIMENSION* dimension = static_cast<const DIMENSION*>( aItem );
-
-                points->AddPoint( dimension->m_crossBarO );
-                points->AddPoint( dimension->m_crossBarF );
-                points->AddPoint( dimension->m_featureLineGO );
-                points->AddPoint( dimension->m_featureLineDO );
-                points->AddPoint( dimension->GetTextPosition() );
-
-                // Dimension height setting - edit points should move only along the feature lines
-                points->Point( DIM_CROSSBARO ).SetConstraint( new EC_LINE( points->Point( DIM_CROSSBARO ),
-                                                                           points->Point( DIM_FEATUREGO ) ) );
-                points->Point( DIM_CROSSBARF ).SetConstraint( new EC_LINE( points->Point( DIM_CROSSBARF ),
-                                                                           points->Point( DIM_FEATUREDO ) ) );
+#warning("TODO");
+//                const DIMENSION* dimension = static_cast<const DIMENSION*>( aItem );
+//
+//                points->AddPoint( dimension->m_crossBarO );
+//                points->AddPoint( dimension->m_crossBarF );
+//                points->AddPoint( dimension->m_featureLineGO );
+//                points->AddPoint( dimension->m_featureLineDO );
+//                points->AddPoint( dimension->GetTextPosition() );
+//
+//                // Dimension height setting - edit points should move only along the feature lines
+//                points->Point( DIM_CROSSBARO ).SetConstraint( new EC_LINE( points->Point( DIM_CROSSBARO ),
+//                                                                           points->Point( DIM_FEATUREGO ) ) );
+//                points->Point( DIM_CROSSBARF ).SetConstraint( new EC_LINE( points->Point( DIM_CROSSBARF ),
+//                                                                           points->Point( DIM_FEATUREDO ) ) );
 
                 break;
             }
@@ -484,52 +485,53 @@ void POINT_EDITOR::updateItem() const
 
     case PCB_DIMENSION_T:
     {
-        DIMENSION* dimension = static_cast<DIMENSION*>( item );
-
-        // Check which point is currently modified and updated dimension's points respectively
-        if( isModified( m_editPoints->Point( DIM_CROSSBARO ) ) )
-        {
-            VECTOR2D featureLine( m_editedPoint->GetPosition() - dimension->GetOrigin() );
-            VECTOR2D crossBar( dimension->GetEnd() - dimension->GetOrigin() );
-
-            if( featureLine.Cross( crossBar ) > 0 )
-                dimension->SetHeight( -featureLine.EuclideanNorm() );
-            else
-                dimension->SetHeight( featureLine.EuclideanNorm() );
-        }
-
-        else if( isModified( m_editPoints->Point( DIM_CROSSBARF ) ) )
-        {
-            VECTOR2D featureLine( m_editedPoint->GetPosition() - dimension->GetEnd() );
-            VECTOR2D crossBar( dimension->GetEnd() - dimension->GetOrigin() );
-
-            if( featureLine.Cross( crossBar ) > 0 )
-                dimension->SetHeight( -featureLine.EuclideanNorm() );
-            else
-                dimension->SetHeight( featureLine.EuclideanNorm() );
-        }
-
-        else if( isModified( m_editPoints->Point( DIM_FEATUREGO ) ) )
-        {
-            dimension->SetOrigin( wxPoint( m_editedPoint->GetPosition().x, m_editedPoint->GetPosition().y ) );
-            m_editPoints->Point( DIM_CROSSBARO ).SetConstraint( new EC_LINE( m_editPoints->Point( DIM_CROSSBARO ),
-                                                                             m_editPoints->Point( DIM_FEATUREGO ) ) );
-            m_editPoints->Point( DIM_CROSSBARF ).SetConstraint( new EC_LINE( m_editPoints->Point( DIM_CROSSBARF ),
-                                                                             m_editPoints->Point( DIM_FEATUREDO ) ) );
-        }
-
-        else if( isModified( m_editPoints->Point( DIM_FEATUREDO ) ) )
-        {
-            dimension->SetEnd( wxPoint( m_editedPoint->GetPosition().x, m_editedPoint->GetPosition().y ) );
-            m_editPoints->Point( DIM_CROSSBARO ).SetConstraint( new EC_LINE( m_editPoints->Point( DIM_CROSSBARO ),
-                                                                             m_editPoints->Point( DIM_FEATUREGO ) ) );
-            m_editPoints->Point( DIM_CROSSBARF ).SetConstraint( new EC_LINE( m_editPoints->Point( DIM_CROSSBARF ),
-                                                                             m_editPoints->Point( DIM_FEATUREDO ) ) );
-        }
-        else if( isModified( m_editPoints->Point( DIM_TEXTPOS ) ) )
-        {
-            dimension->SetTextPosition( wxPoint( m_editedPoint->GetPosition().x, m_editedPoint->GetPosition().y ) );
-        }
+#warning ("TODO")
+//        DIMENSION* dimension = static_cast<DIMENSION*>( item );
+//
+//        // Check which point is currently modified and updated dimension's points respectively
+//        if( isModified( m_editPoints->Point( DIM_CROSSBARO ) ) )
+//        {
+//            VECTOR2D featureLine( m_editedPoint->GetPosition() - dimension->GetOrigin() );
+//            VECTOR2D crossBar( dimension->GetEnd() - dimension->GetOrigin() );
+//
+//            if( featureLine.Cross( crossBar ) > 0 )
+//                dimension->SetHeight( -featureLine.EuclideanNorm() );
+//            else
+//                dimension->SetHeight( featureLine.EuclideanNorm() );
+//        }
+//
+//        else if( isModified( m_editPoints->Point( DIM_CROSSBARF ) ) )
+//        {
+//            VECTOR2D featureLine( m_editedPoint->GetPosition() - dimension->GetEnd() );
+//            VECTOR2D crossBar( dimension->GetEnd() - dimension->GetOrigin() );
+//
+//            if( featureLine.Cross( crossBar ) > 0 )
+//                dimension->SetHeight( -featureLine.EuclideanNorm() );
+//            else
+//                dimension->SetHeight( featureLine.EuclideanNorm() );
+//        }
+//
+//        else if( isModified( m_editPoints->Point( DIM_FEATUREGO ) ) )
+//        {
+//            dimension->SetOrigin( wxPoint( m_editedPoint->GetPosition().x, m_editedPoint->GetPosition().y ) );
+//            m_editPoints->Point( DIM_CROSSBARO ).SetConstraint( new EC_LINE( m_editPoints->Point( DIM_CROSSBARO ),
+//                                                                             m_editPoints->Point( DIM_FEATUREGO ) ) );
+//            m_editPoints->Point( DIM_CROSSBARF ).SetConstraint( new EC_LINE( m_editPoints->Point( DIM_CROSSBARF ),
+//                                                                             m_editPoints->Point( DIM_FEATUREDO ) ) );
+//        }
+//
+//        else if( isModified( m_editPoints->Point( DIM_FEATUREDO ) ) )
+//        {
+//            dimension->SetEnd( wxPoint( m_editedPoint->GetPosition().x, m_editedPoint->GetPosition().y ) );
+//            m_editPoints->Point( DIM_CROSSBARO ).SetConstraint( new EC_LINE( m_editPoints->Point( DIM_CROSSBARO ),
+//                                                                             m_editPoints->Point( DIM_FEATUREGO ) ) );
+//            m_editPoints->Point( DIM_CROSSBARF ).SetConstraint( new EC_LINE( m_editPoints->Point( DIM_CROSSBARF ),
+//                                                                             m_editPoints->Point( DIM_FEATUREDO ) ) );
+//        }
+//        else if( isModified( m_editPoints->Point( DIM_TEXTPOS ) ) )
+//        {
+//            dimension->SetTextPosition( wxPoint( m_editedPoint->GetPosition().x, m_editedPoint->GetPosition().y ) );
+//        }
 
         break;
     }
@@ -613,13 +615,14 @@ void POINT_EDITOR::updatePoints()
 
     case PCB_DIMENSION_T:
     {
-        const DIMENSION* dimension = static_cast<const DIMENSION*>( item );
-
-        m_editPoints->Point( DIM_CROSSBARO ).SetPosition( dimension->m_crossBarO );
-        m_editPoints->Point( DIM_CROSSBARF ).SetPosition( dimension->m_crossBarF );
-        m_editPoints->Point( DIM_FEATUREGO ).SetPosition( dimension->m_featureLineGO );
-        m_editPoints->Point( DIM_FEATUREDO ).SetPosition( dimension->m_featureLineDO );
-        m_editPoints->Point( DIM_TEXTPOS ).SetPosition( dimension->GetTextPosition() );
+#warning ("TODO")
+//        const DIMENSION* dimension = static_cast<const DIMENSION*>( item );
+//
+//        m_editPoints->Point( DIM_CROSSBARO ).SetPosition( dimension->m_crossBarO );
+//        m_editPoints->Point( DIM_CROSSBARF ).SetPosition( dimension->m_crossBarF );
+//        m_editPoints->Point( DIM_FEATUREGO ).SetPosition( dimension->m_featureLineGO );
+//        m_editPoints->Point( DIM_FEATUREDO ).SetPosition( dimension->m_featureLineDO );
+//        m_editPoints->Point( DIM_TEXTPOS ).SetPosition( dimension->GetTextPosition() );
         break;
     }
 

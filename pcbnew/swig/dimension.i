@@ -1,6 +1,6 @@
 
-%include class_dimension.h
+%include dimension/class_dimension.h
 %{
-#include <class_dimension.h>
+#include <dimension/class_dimension.h>
 %}
 

@@ -50,7 +50,7 @@
 #include <class_pcb_text.h>
 #include <class_mire.h>
 #include <class_module.h>
-#include <class_dimension.h>
+#include <dimension/class_dimension.h>
 #include <class_edge_mod.h>
 
 #include <dialogs/dialog_move_exact.h>

@@ -76,7 +76,7 @@
 #include <class_track.h>
 #include <class_pcb_text.h>
 #include <class_zone.h>
-#include <class_dimension.h>
+#include <dimension/class_dimension.h>
 #include <class_drawsegment.h>
 #include <class_mire.h>
 #include <class_edge_mod.h>
@@ -2753,192 +2753,194 @@ void LEGACY_PLUGIN::loadZONE_CONTAINER()
 
 void LEGACY_PLUGIN::loadDIMENSION()
 {
-    unique_ptr<DIMENSION> dim( new DIMENSION( m_board ) );
 
-    char*   line;
-    char*   saveptr;
-
-    while( ( line = READLINE( m_reader ) ) != NULL )
-    {
-        const char*  data;
-
-        if( TESTLINE( "$endCOTATION" ) )
-        {
-            m_board->Add( dim.release(), ADD_APPEND );
-            return;     // preferred exit
-        }
-
-        else if( TESTLINE( "Va" ) )
-        {
-            BIU value = biuParse( line + SZ( "Va" ) );
-            dim->SetValue( value );
-        }
-
-        else if( TESTLINE( "Ge" ) )
-        {
-            LAYER_NUM      layer_num;
-            unsigned long  timestamp;
-            int            shape;
-            int            ilayer;
-
-            sscanf( line + SZ( "Ge" ), " %d %d %lX", &shape, &ilayer, &timestamp );
-
-            if( ilayer < FIRST_NON_COPPER_LAYER )
-                layer_num = FIRST_NON_COPPER_LAYER;
-            else if( ilayer > LAST_NON_COPPER_LAYER )
-                layer_num = LAST_NON_COPPER_LAYER;
-            else
-                layer_num = ilayer;
-
-            dim->SetLayer( leg_layer2new( m_cu_count,  layer_num ) );
-            dim->SetTimeStamp( (time_t) timestamp );
-            dim->SetShape( shape );
-        }
-
-        else if( TESTLINE( "Te" ) )
-        {
-            char  buf[2048];
-
-            ReadDelimitedText( buf, line + SZ( "Te" ), sizeof(buf) );
-            dim->SetText( FROM_UTF8( buf ) );
-        }
-
-        else if( TESTLINE( "Po" ) )
-        {
-            // sscanf( Line + 2, " %d %d %d %d %d %d %d", &m_Text->m_Pos.x, &m_Text->m_Pos.y,
-            // &m_Text->m_Size.x, &m_Text->m_Size.y, &thickness, &orientation, &normal_display );
-
-            BIU     pos_x  = biuParse( line + SZ( "Po" ), &data );
-            BIU     pos_y  = biuParse( data, &data );
-            BIU     width  = biuParse( data, &data );
-            BIU     height = biuParse( data, &data );
-            BIU     thickn = biuParse( data, &data );
-            double  orient = degParse( data, &data );
-            char*   mirror = strtok_r( (char*) data, delims, &saveptr );
-
-            // This sets both DIMENSION's position and internal m_Text's.
-            // @todo: But why do we even know about internal m_Text?
-            dim->SetPosition( wxPoint( pos_x, pos_y ) );
-            dim->SetTextSize( wxSize( width, height ) );
-
-            dim->Text().SetMirrored( mirror && *mirror == '0' );
-            dim->Text().SetThickness( thickn );
-            dim->Text().SetOrientation( orient );
-        }
-
-        else if( TESTLINE( "Sb" ) )
-        {
-            // sscanf( Line + 2, " %d %d %d %d %d %d", &Dummy, &m_crossBarOx, &m_crossBarOy, &m_crossBarFx, &m_crossBarFy, &m_Width );
-
-            int ignore     = biuParse( line + SZ( "Sb" ), &data );
-            BIU crossBarOx = biuParse( data, &data );
-            BIU crossBarOy = biuParse( data, &data );
-            BIU crossBarFx = biuParse( data, &data );
-            BIU crossBarFy = biuParse( data, &data );
-            BIU width      = biuParse( data );
-
-            dim->m_crossBarO.x = crossBarOx;
-            dim->m_crossBarO.y = crossBarOy;
-            dim->m_crossBarF.x = crossBarFx;
-            dim->m_crossBarF.y = crossBarFy;
-            dim->SetWidth( width );
-            (void) ignore;
-        }
-
-        else if( TESTLINE( "Sd" ) )
-        {
-            // sscanf( Line + 2, " %d %d %d %d %d %d", &Dummy, &m_featureLineDOx, &m_featureLineDOy, &m_featureLineDFx, &m_featureLineDFy, &Dummy );
-
-            int ignore         = intParse( line + SZ( "Sd" ), &data );
-            BIU featureLineDOx = biuParse( data, &data );
-            BIU featureLineDOy = biuParse( data, &data );
-            BIU featureLineDFx = biuParse( data, &data );
-            BIU featureLineDFy = biuParse( data );
-
-            dim->m_featureLineDO.x = featureLineDOx;
-            dim->m_featureLineDO.y = featureLineDOy;
-            dim->m_featureLineDF.x = featureLineDFx;
-            dim->m_featureLineDF.y = featureLineDFy;
-            (void) ignore;
-        }
-
-        else if( TESTLINE( "Sg" ) )
-        {
-            // sscanf( Line + 2, " %d %d %d %d %d %d", &Dummy, &m_featureLineGOx, &m_featureLineGOy, &m_featureLineGFx, &m_featureLineGFy, &Dummy );
-
-            int ignore         = intParse( line + SZ( "Sg" ), &data );
-            BIU featureLineGOx = biuParse( data, &data );
-            BIU featureLineGOy = biuParse( data, &data );
-            BIU featureLineGFx = biuParse( data, &data );
-            BIU featureLineGFy = biuParse( data );
-
-            dim->m_featureLineGO.x = featureLineGOx;
-            dim->m_featureLineGO.y = featureLineGOy;
-            dim->m_featureLineGF.x = featureLineGFx;
-            dim->m_featureLineGF.y = featureLineGFy;
-            (void) ignore;
-        }
-
-        else if( TESTLINE( "S1" ) )
-        {
-            // sscanf( Line + 2, " %d %d %d %d %d %d", &Dummy, &m_arrowD1Ox, &m_arrowD1Oy, &m_arrowD1Fx, &m_arrowD1Fy, &Dummy );
-
-            int ignore      = intParse( line + SZ( "S1" ), &data );
-            biuParse( data, &data );    // skipping excessive data
-            biuParse( data, &data );    // skipping excessive data
-            BIU arrowD1Fx   = biuParse( data, &data );
-            BIU arrowD1Fy   = biuParse( data );
-
-            dim->m_arrowD1F.x = arrowD1Fx;
-            dim->m_arrowD1F.y = arrowD1Fy;
-            (void) ignore;
-        }
-
-        else if( TESTLINE( "S2" ) )
-        {
-            // sscanf( Line + 2, " %d %d %d %d %d %d", &Dummy, &m_arrowD2Ox, &m_arrowD2Oy, &m_arrowD2Fx, &m_arrowD2Fy, &Dummy );
-
-            int ignore    = intParse( line + SZ( "S2" ), &data );
-            biuParse( data, &data );    // skipping excessive data
-            biuParse( data, &data );    // skipping excessive data
-            BIU arrowD2Fx = biuParse( data, &data );
-            BIU arrowD2Fy = biuParse( data, &data );
-
-            dim->m_arrowD2F.x = arrowD2Fx;
-            dim->m_arrowD2F.y = arrowD2Fy;
-            (void) ignore;
-        }
-
-        else if( TESTLINE( "S3" ) )
-        {
-            // sscanf( Line + 2, " %d %d %d %d %d %d\n", &Dummy, &m_arrowG1Ox, &m_arrowG1Oy, &m_arrowG1Fx, &m_arrowG1Fy, &Dummy );
-            int ignore    = intParse( line + SZ( "S3" ), &data );
-            biuParse( data, &data );    // skipping excessive data
-            biuParse( data, &data );    // skipping excessive data
-            BIU arrowG1Fx = biuParse( data, &data );
-            BIU arrowG1Fy = biuParse( data, &data );
-
-            dim->m_arrowG1F.x = arrowG1Fx;
-            dim->m_arrowG1F.y = arrowG1Fy;
-            (void) ignore;
-        }
-
-        else if( TESTLINE( "S4" ) )
-        {
-            // sscanf( Line + 2, " %d %d %d %d %d %d", &Dummy, &m_arrowG2Ox, &m_arrowG2Oy, &m_arrowG2Fx, &m_arrowG2Fy, &Dummy );
-            int ignore    = intParse( line + SZ( "S4" ), &data );
-            biuParse( data, &data );    // skipping excessive data
-            biuParse( data, &data );    // skipping excessive data
-            BIU arrowG2Fx = biuParse( data, &data );
-            BIU arrowG2Fy = biuParse( data, &data );
-
-            dim->m_arrowG2F.x = arrowG2Fx;
-            dim->m_arrowG2F.y = arrowG2Fy;
-            (void) ignore;
-        }
-    }
-
-    THROW_IO_ERROR( "Missing '$endCOTATION'" );
+#warning ("TODO")
+//    unique_ptr<DIMENSION> dim( new DIMENSION( m_board ) );
+//
+//    char*   line;
+//    char*   saveptr;
+//
+//    while( ( line = READLINE( m_reader ) ) != NULL )
+//    {
+//        const char*  data;
+//
+//        if( TESTLINE( "$endCOTATION" ) )
+//        {
+//            m_board->Add( dim.release(), ADD_APPEND );
+//            return;     // preferred exit
+//        }
+//
+//        else if( TESTLINE( "Va" ) )
+//        {
+//            BIU value = biuParse( line + SZ( "Va" ) );
+//            dim->SetValue( value );
+//        }
+//
+//        else if( TESTLINE( "Ge" ) )
+//        {
+//            LAYER_NUM      layer_num;
+//            unsigned long  timestamp;
+//            int            shape;
+//            int            ilayer;
+//
+//            sscanf( line + SZ( "Ge" ), " %d %d %lX", &shape, &ilayer, &timestamp );
+//
+//            if( ilayer < FIRST_NON_COPPER_LAYER )
+//                layer_num = FIRST_NON_COPPER_LAYER;
+//            else if( ilayer > LAST_NON_COPPER_LAYER )
+//                layer_num = LAST_NON_COPPER_LAYER;
+//            else
+//                layer_num = ilayer;
+//
+//            dim->SetLayer( leg_layer2new( m_cu_count,  layer_num ) );
+//            dim->SetTimeStamp( (time_t) timestamp );
+//            dim->SetShape( shape );
+//        }
+//
+//        else if( TESTLINE( "Te" ) )
+//        {
+//            char  buf[2048];
+//
+//            ReadDelimitedText( buf, line + SZ( "Te" ), sizeof(buf) );
+//            dim->SetText( FROM_UTF8( buf ) );
+//        }
+//
+//        else if( TESTLINE( "Po" ) )
+//        {
+//            // sscanf( Line + 2, " %d %d %d %d %d %d %d", &m_Text->m_Pos.x, &m_Text->m_Pos.y,
+//            // &m_Text->m_Size.x, &m_Text->m_Size.y, &thickness, &orientation, &normal_display );
+//
+//            BIU     pos_x  = biuParse( line + SZ( "Po" ), &data );
+//            BIU     pos_y  = biuParse( data, &data );
+//            BIU     width  = biuParse( data, &data );
+//            BIU     height = biuParse( data, &data );
+//            BIU     thickn = biuParse( data, &data );
+//            double  orient = degParse( data, &data );
+//            char*   mirror = strtok_r( (char*) data, delims, &saveptr );
+//
+//            // This sets both DIMENSION's position and internal m_Text's.
+//            // @todo: But why do we even know about internal m_Text?
+//            dim->SetPosition( wxPoint( pos_x, pos_y ) );
+//            dim->SetTextSize( wxSize( width, height ) );
+//
+//            dim->Text().SetMirrored( mirror && *mirror == '0' );
+//            dim->Text().SetThickness( thickn );
+//            dim->Text().SetOrientation( orient );
+//        }
+//
+//        else if( TESTLINE( "Sb" ) )
+//        {
+//            // sscanf( Line + 2, " %d %d %d %d %d %d", &Dummy, &m_crossBarOx, &m_crossBarOy, &m_crossBarFx, &m_crossBarFy, &m_Width );
+//
+//            int ignore     = biuParse( line + SZ( "Sb" ), &data );
+//            BIU crossBarOx = biuParse( data, &data );
+//            BIU crossBarOy = biuParse( data, &data );
+//            BIU crossBarFx = biuParse( data, &data );
+//            BIU crossBarFy = biuParse( data, &data );
+//            BIU width      = biuParse( data );
+//
+//            dim->m_crossBarO.x = crossBarOx;
+//            dim->m_crossBarO.y = crossBarOy;
+//            dim->m_crossBarF.x = crossBarFx;
+//            dim->m_crossBarF.y = crossBarFy;
+//            dim->SetWidth( width );
+//            (void) ignore;
+//        }
+//
+//        else if( TESTLINE( "Sd" ) )
+//        {
+//            // sscanf( Line + 2, " %d %d %d %d %d %d", &Dummy, &m_featureLineDOx, &m_featureLineDOy, &m_featureLineDFx, &m_featureLineDFy, &Dummy );
+//
+//            int ignore         = intParse( line + SZ( "Sd" ), &data );
+//            BIU featureLineDOx = biuParse( data, &data );
+//            BIU featureLineDOy = biuParse( data, &data );
+//            BIU featureLineDFx = biuParse( data, &data );
+//            BIU featureLineDFy = biuParse( data );
+//
+//            dim->m_featureLineDO.x = featureLineDOx;
+//            dim->m_featureLineDO.y = featureLineDOy;
+//            dim->m_featureLineDF.x = featureLineDFx;
+//            dim->m_featureLineDF.y = featureLineDFy;
+//            (void) ignore;
+//        }
+//
+//        else if( TESTLINE( "Sg" ) )
+//        {
+//            // sscanf( Line + 2, " %d %d %d %d %d %d", &Dummy, &m_featureLineGOx, &m_featureLineGOy, &m_featureLineGFx, &m_featureLineGFy, &Dummy );
+//
+//            int ignore         = intParse( line + SZ( "Sg" ), &data );
+//            BIU featureLineGOx = biuParse( data, &data );
+//            BIU featureLineGOy = biuParse( data, &data );
+//            BIU featureLineGFx = biuParse( data, &data );
+//            BIU featureLineGFy = biuParse( data );
+//
+//            dim->m_featureLineGO.x = featureLineGOx;
+//            dim->m_featureLineGO.y = featureLineGOy;
+//            dim->m_featureLineGF.x = featureLineGFx;
+//            dim->m_featureLineGF.y = featureLineGFy;
+//            (void) ignore;
+//        }
+//
+//        else if( TESTLINE( "S1" ) )
+//        {
+//            // sscanf( Line + 2, " %d %d %d %d %d %d", &Dummy, &m_arrowD1Ox, &m_arrowD1Oy, &m_arrowD1Fx, &m_arrowD1Fy, &Dummy );
+//
+//            int ignore      = intParse( line + SZ( "S1" ), &data );
+//            biuParse( data, &data );    // skipping excessive data
+//            biuParse( data, &data );    // skipping excessive data
+//            BIU arrowD1Fx   = biuParse( data, &data );
+//            BIU arrowD1Fy   = biuParse( data );
+//
+//            dim->m_arrowD1F.x = arrowD1Fx;
+//            dim->m_arrowD1F.y = arrowD1Fy;
+//            (void) ignore;
+//        }
+//
+//        else if( TESTLINE( "S2" ) )
+//        {
+//            // sscanf( Line + 2, " %d %d %d %d %d %d", &Dummy, &m_arrowD2Ox, &m_arrowD2Oy, &m_arrowD2Fx, &m_arrowD2Fy, &Dummy );
+//
+//            int ignore    = intParse( line + SZ( "S2" ), &data );
+//            biuParse( data, &data );    // skipping excessive data
+//            biuParse( data, &data );    // skipping excessive data
+//            BIU arrowD2Fx = biuParse( data, &data );
+//            BIU arrowD2Fy = biuParse( data, &data );
+//
+//            dim->m_arrowD2F.x = arrowD2Fx;
+//            dim->m_arrowD2F.y = arrowD2Fy;
+//            (void) ignore;
+//        }
+//
+//        else if( TESTLINE( "S3" ) )
+//        {
+//            // sscanf( Line + 2, " %d %d %d %d %d %d\n", &Dummy, &m_arrowG1Ox, &m_arrowG1Oy, &m_arrowG1Fx, &m_arrowG1Fy, &Dummy );
+//            int ignore    = intParse( line + SZ( "S3" ), &data );
+//            biuParse( data, &data );    // skipping excessive data
+//            biuParse( data, &data );    // skipping excessive data
+//            BIU arrowG1Fx = biuParse( data, &data );
+//            BIU arrowG1Fy = biuParse( data, &data );
+//
+//            dim->m_arrowG1F.x = arrowG1Fx;
+//            dim->m_arrowG1F.y = arrowG1Fy;
+//            (void) ignore;
+//        }
+//
+//        else if( TESTLINE( "S4" ) )
+//        {
+//            // sscanf( Line + 2, " %d %d %d %d %d %d", &Dummy, &m_arrowG2Ox, &m_arrowG2Oy, &m_arrowG2Fx, &m_arrowG2Fy, &Dummy );
+//            int ignore    = intParse( line + SZ( "S4" ), &data );
+//            biuParse( data, &data );    // skipping excessive data
+//            biuParse( data, &data );    // skipping excessive data
+//            BIU arrowG2Fx = biuParse( data, &data );
+//            BIU arrowG2Fy = biuParse( data, &data );
+//
+//            dim->m_arrowG2F.x = arrowG2Fx;
+//            dim->m_arrowG2F.y = arrowG2Fy;
+//            (void) ignore;
+//        }
+//    }
+//
+//    THROW_IO_ERROR( "Missing '$endCOTATION'" );
 }
 
 
