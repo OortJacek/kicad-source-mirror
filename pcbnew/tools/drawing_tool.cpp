@@ -50,6 +50,7 @@
 #include <class_module.h>
 
 #include <dimension/class_dimension.h>
+#include <dimension/class_dimension.linear>
 #include <boost/optional/optional_io.hpp>
 
 DRAWING_TOOL::DRAWING_TOOL() :
@@ -325,9 +326,17 @@ int DRAWING_TOOL::DrawDimension( const TOOL_EVENT& aEvent )
 {
     std::cout << "drawing_tool.cpp:325 DrawDimension:" <<aEvent.GetCommandStr() << std::endl;
 
-    DIMENSION* dimension = NULL;
+    DIMENSION* dimension = nullptr;
     BOARD_COMMIT commit( m_frame );
     int maxThickness;
+    LAYER_ID layer;
+
+    layer = m_frame->GetScreen()->m_Active_Layer;
+    if( IsCopperLayer( layer ) || layer == Edge_Cuts )
+    {
+        DisplayInfoMessage( NULL, _( "Dimension not allowed on Copper or Edge Cut layers" ) );
+        return 0;
+    }
 
     // Add a VIEW_GROUP that serves as a preview for the new item
     KIGFX::VIEW_GROUP preview( m_view );
@@ -338,31 +347,105 @@ int DRAWING_TOOL::DrawDimension( const TOOL_EVENT& aEvent )
     m_controls->SetSnapping( true );
 
     Activate();
-    m_frame->SetToolID( ID_PCB_DIMENSION_LINEAR_BUTT, wxCURSOR_PENCIL, _( "Add dimension" ) );
-    /* tutaj w zaleznosci jaki buton taki aktywujemy np, ID_PCB_DIMENSION_RADIAL_BUTT */
 
-    const int SET_ORIGIN = 0;
-    const int FINISHED = 0;
-    int step = SET_ORIGIN;
-
-    while( OPT_TOOL_EVENT evt = Wait() )
+    if(aEvent.GetCommandStr() && aEvent.GetCommandStr().get().compare("pcbnew.InteractiveDrawing.dimension.linear"))
     {
-        VECTOR2I cursorPos = m_controls->GetCursorPosition();
+        dimension = new DIMENSION_LINEAR( m_board );
+        m_frame->SetToolID( ID_PCB_DIMENSION_LINEAR_BUTT, wxCURSOR_PENCIL, _( "Add linear dimension" ) );
+    }
+    else
+    {
+        DisplayInfoMessage( NULL, _( "Cannot draw this kind of dimension" ) );
+    }
 
-        if( evt->IsCancel() || evt->IsActivate() )
+    if(dimension)
+    {
+        dimension->SetLayer( layer );
+        dimension->Text().SetSize( m_board->GetDesignSettings().m_PcbTextSize );
+
+        int width = m_board->GetDesignSettings().m_PcbTextWidth;
+        maxThickness = Clamp_Text_PenSize( width, dimension->Text().GetSize() );
+
+        if( width > maxThickness )
+            width = maxThickness;
+
+        dimension->Text().SetThickness( width );
+        dimension->SetWidth( width );
+
+        preview.Add( dimension );
+
+        m_controls->SetAutoPan( true );
+        m_controls->CaptureCursor( true );
+
+        int step = 0;
+        while( OPT_TOOL_EVENT evt = Wait())
         {
-            if( step != SET_ORIGIN )    // start from the beginning
+            VECTOR2I cursorPos = m_controls->GetCursorPosition();
+
+            if( evt->IsCancel() || evt->IsActivate() )
             {
-                preview.Clear();
-
-                delete dimension;
-                step = SET_ORIGIN;
+                if( step != 0 ) /* Start from the beginning */
+                {
+                    preview.Clear();
+                    step = 0;
+                }
+                else /* Cancel drawing */
+                {
+                    delete dimension;
+                    dimension = nullptr;
+                    break;
+                }
             }
-            else
-                break;
 
-            if( evt->IsActivate() )  // now finish unconditionally
-                break;
+            else if( evt->IsAction( &COMMON_ACTIONS::incWidth ) && dimension )
+            {
+                dimension->SetWidth( dimension->GetWidth() + WIDTH_STEP );
+                preview.ViewUpdate( KIGFX::VIEW_ITEM::GEOMETRY );
+            }
+
+            else if( evt->IsAction( &COMMON_ACTIONS::decWidth ) && dimension )
+            {
+                int width = dimension->GetWidth();
+
+                if( width > WIDTH_STEP )
+                {
+                    dimension->SetWidth( width - WIDTH_STEP );
+                    preview.ViewUpdate( KIGFX::VIEW_ITEM::GEOMETRY );
+                }
+            }
+
+            else if( evt->IsClick( BUT_LEFT )  )
+            {
+                if(dimension->GetDrawingPointsNumber()-1 > step)
+                {
+                    dimension->SetDrawingPoint(step, wxPoint( cursorPos.x, cursorPos.y ));
+                    step++;
+                }
+                else /* last point */
+                {
+
+                    dimension->SetDrawingPoint(step, wxPoint( cursorPos.x, cursorPos.y ));
+
+                    preview.Remove( dimension );
+
+                    commit.Add( dimension );
+                    commit.Push( _( "Draw a dimension" ) );
+
+                    step = 0;
+                    m_controls->SetAutoPan( false );
+                    m_controls->CaptureCursor( false );
+
+                    break;
+                }
+            }
+
+            else if( evt->IsMotion() && dimension->GetDrawingPointsNumber()-1 > step )
+            {
+                dimension->SetDrawingPoint(step, wxPoint( cursorPos.x, cursorPos.y ));
+
+                // Show a preview of the item
+                preview.ViewUpdate( KIGFX::VIEW_ITEM::GEOMETRY );
+            }
         }
     }
 
