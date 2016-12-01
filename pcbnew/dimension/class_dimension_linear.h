@@ -11,6 +11,10 @@
 
 class DIMENSION_LINEAR : public DIMENSION
 {
+private:
+
+    std::vector<wxPoint*> points;
+
 public:
 
     DIMENSION_LINEAR( BOARD_ITEM* aParent );

@@ -28,7 +28,7 @@
  * @file class_dimension.cpp
  */
 
-#include <class_dimension_linear.h>
+#include <dimension/class_dimension_linear.h>
 
 #include <fctsys.h>
 #include <macros.h>
@@ -44,17 +44,67 @@
 #include <class_pcb_text.h>
 #include <base_units.h>
 
+#include <iostream>
+
 
 DIMENSION_LINEAR::DIMENSION_LINEAR( BOARD_ITEM* aParent ) :
     DIMENSION( aParent )
 {
     m_Shape = DIM_LINEAR;
     m_DrawingPointsNumber = 2;
+
+    std::cout << " DIMENSION_LINEAR constructor "<<  std::endl;
+
 }
 
 
 DIMENSION_LINEAR::~DIMENSION_LINEAR()
 {
+}
+
+void DIMENSION_LINEAR::SetAngle(double aAngle) const
+{
+    return;
+}
+
+bool DIMENSION_LINEAR::SetDrawingPoint(int aNr, wxPoint& aPoint)
+{
+//    std::cout << " SetDrawingPoint " << "nosize" <<   std::endl;
+//    std::cout << " SetDrawingPoint " << points.size() << aNr <<  std::endl;
+
+    if(points.size() <= aNr)
+    {
+//        std::cout << " new wxPoint " << std::endl;
+        wxPoint* pt = new wxPoint(aPoint.x, aPoint.y);
+//        std::cout << " push " << std::endl;
+        points.push_back(pt);
+    }
+    else
+    {
+//        std::cout << " old " << std::endl;
+
+        points[aNr]->x = aPoint.x;
+        points[aNr]->y = aPoint.y;
+    }
+
+    std::cout << " NEW " << std::endl;
+    for(auto& point : points)
+    {
+        std::cout << "x:" << point->x << " y:" << point->y << std::endl;
+    }
+
+    return true;
+}
+std::vector<std::pair<wxPoint, wxPoint>> DIMENSION_LINEAR::GetLines()
+{
+    std::vector<std::pair<wxPoint, wxPoint>> vect = {};
+    return vect;
+}
+
+std::vector<std::pair<wxPoint, std::function<void()>>> DIMENSION_LINEAR::GetEditPoints()
+{
+    std::vector<std::pair<wxPoint, std::function<void()>>> vect = {};
+    return vect;
 }
 
 

@@ -50,7 +50,7 @@
 #include <class_module.h>
 
 #include <dimension/class_dimension.h>
-#include <dimension/class_dimension.linear>
+#include <dimension/class_dimension_linear.h>
 #include <boost/optional/optional_io.hpp>
 
 DRAWING_TOOL::DRAWING_TOOL() :
@@ -329,6 +329,7 @@ int DRAWING_TOOL::DrawDimension( const TOOL_EVENT& aEvent )
     DIMENSION* dimension = nullptr;
     BOARD_COMMIT commit( m_frame );
     int maxThickness;
+    wxPoint cursorPos;
     LAYER_ID layer;
 
     layer = m_frame->GetScreen()->m_Active_Layer;
@@ -348,7 +349,7 @@ int DRAWING_TOOL::DrawDimension( const TOOL_EVENT& aEvent )
 
     Activate();
 
-    if(aEvent.GetCommandStr() && aEvent.GetCommandStr().get().compare("pcbnew.InteractiveDrawing.dimension.linear"))
+    if(aEvent.GetCommandStr() && !(aEvent.GetCommandStr().get().compare("pcbnew.InteractiveDrawing.dimension.linear")))
     {
         dimension = new DIMENSION_LINEAR( m_board );
         m_frame->SetToolID( ID_PCB_DIMENSION_LINEAR_BUTT, wxCURSOR_PENCIL, _( "Add linear dimension" ) );
@@ -357,6 +358,8 @@ int DRAWING_TOOL::DrawDimension( const TOOL_EVENT& aEvent )
     {
         DisplayInfoMessage( NULL, _( "Cannot draw this kind of dimension" ) );
     }
+
+    std::cout << "dimension:" << dimension << std::endl;
 
     if(dimension)
     {
@@ -380,10 +383,14 @@ int DRAWING_TOOL::DrawDimension( const TOOL_EVENT& aEvent )
         int step = 0;
         while( OPT_TOOL_EVENT evt = Wait())
         {
-            VECTOR2I cursorPos = m_controls->GetCursorPosition();
+            VECTOR2I cursorPosVec = m_controls->GetCursorPosition();
+            cursorPos.x = cursorPosVec.x;
+            cursorPos.y = cursorPosVec.y;
 
             if( evt->IsCancel() || evt->IsActivate() )
             {
+                std::cout << "IsActivate" << dimension << std::endl;
+
                 if( step != 0 ) /* Start from the beginning */
                 {
                     preview.Clear();
@@ -399,12 +406,15 @@ int DRAWING_TOOL::DrawDimension( const TOOL_EVENT& aEvent )
 
             else if( evt->IsAction( &COMMON_ACTIONS::incWidth ) && dimension )
             {
+                std::cout << "incWidth" << dimension << std::endl;
+
                 dimension->SetWidth( dimension->GetWidth() + WIDTH_STEP );
                 preview.ViewUpdate( KIGFX::VIEW_ITEM::GEOMETRY );
             }
 
             else if( evt->IsAction( &COMMON_ACTIONS::decWidth ) && dimension )
             {
+                std::cout << "decWidth" << dimension << std::endl;
                 int width = dimension->GetWidth();
 
                 if( width > WIDTH_STEP )
@@ -414,17 +424,19 @@ int DRAWING_TOOL::DrawDimension( const TOOL_EVENT& aEvent )
                 }
             }
 
-            else if( evt->IsClick( BUT_LEFT )  )
+            else if( evt->IsClick( BUT_LEFT ) )
             {
+                std::cout << "BUT_LEFT" << dimension << std::endl;
+
                 if(dimension->GetDrawingPointsNumber()-1 > step)
                 {
-                    dimension->SetDrawingPoint(step, wxPoint( cursorPos.x, cursorPos.y ));
+                    dimension->SetDrawingPoint(step, cursorPos);
                     step++;
                 }
                 else /* last point */
                 {
 
-                    dimension->SetDrawingPoint(step, wxPoint( cursorPos.x, cursorPos.y ));
+                    dimension->SetDrawingPoint(step, cursorPos);
 
                     preview.Remove( dimension );
 
@@ -441,7 +453,9 @@ int DRAWING_TOOL::DrawDimension( const TOOL_EVENT& aEvent )
 
             else if( evt->IsMotion() && dimension->GetDrawingPointsNumber()-1 > step )
             {
-                dimension->SetDrawingPoint(step, wxPoint( cursorPos.x, cursorPos.y ));
+                std::cout << "IsMotion" << dimension << std::endl;
+
+                dimension->SetDrawingPoint(step, cursorPos);
 
                 // Show a preview of the item
                 preview.ViewUpdate( KIGFX::VIEW_ITEM::GEOMETRY );

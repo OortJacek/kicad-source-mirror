@@ -55,6 +55,7 @@ enum DimShape
 
 class DIMENSION : public BOARD_ITEM
 {
+protected:
     int         m_Width;        ///< Line width
     int         m_Shape;        ///< Currently always 0.
     int         m_DrawingPointsNumber;
@@ -104,8 +105,8 @@ public:
     virtual int     GetDrawingPointsNumber() = 0;;
     virtual bool    SetDrawingPoint(int aPointNumber, wxPoint& aPos) = 0;
 
-    virtual std::vector<std::pair<wxPoint, wxPoint>>& GetLines() = 0;
-    virtual std::vector<std::pair<wxPoint, std::function<void()>>>& GetEditPoints() = 0;
+    virtual std::vector<std::pair<wxPoint, wxPoint>> GetLines() = 0;
+    virtual std::vector<std::pair<wxPoint, std::function<void()>>> GetEditPoints() = 0;
 
 
 /* BOARD_ITEM derivatives */
