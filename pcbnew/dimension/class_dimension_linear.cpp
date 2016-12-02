@@ -51,7 +51,7 @@ DIMENSION_LINEAR::DIMENSION_LINEAR( BOARD_ITEM* aParent ) :
     DIMENSION( aParent )
 {
     m_Shape = DIM_LINEAR;
-    m_DrawingPointsNumber = 2;
+    GetConstructionPointsNumber = 2;
 
     std::cout << " DIMENSION_LINEAR constructor "<<  std::endl;
 
@@ -67,33 +67,31 @@ void DIMENSION_LINEAR::SetAngle(double aAngle) const
     return;
 }
 
-bool DIMENSION_LINEAR::SetDrawingPoint(int aNr, wxPoint& aPoint)
+bool DIMENSION_LINEAR::SetConstructionPoint(unsigned aNr, wxPoint& aPoint)
 {
-//    std::cout << " SetDrawingPoint " << "nosize" <<   std::endl;
-//    std::cout << " SetDrawingPoint " << points.size() << aNr <<  std::endl;
-
-    if(points.size() <= aNr)
+    if( aNr <= constructionPoints.size() && aNr < m_ConstructionPointsNumber )
     {
-//        std::cout << " new wxPoint " << std::endl;
-        wxPoint* pt = new wxPoint(aPoint.x, aPoint.y);
-//        std::cout << " push " << std::endl;
-        points.push_back(pt);
-    }
-    else
-    {
-//        std::cout << " old " << std::endl;
+        if(constructionPoints.size() <= aNr)
+        {
+            wxPoint* pt = new wxPoint(aPoint.x, aPoint.y);
+            constructionPoints.push_back(pt);
+        }
+        else
+        {
+            constructionPoints[aNr]->x = aPoint.x;
+            constructionPoints[aNr]->y = aPoint.y;
+        }
 
-        points[aNr]->x = aPoint.x;
-        points[aNr]->y = aPoint.y;
-    }
+        std::cout << " NEW " << std::endl;
+        for(auto& point : constructionPoints)
+        {
+            std::cout << "x:" << point->x << " y:" << point->y << std::endl;
+        }
 
-    std::cout << " NEW " << std::endl;
-    for(auto& point : points)
-    {
-        std::cout << "x:" << point->x << " y:" << point->y << std::endl;
+        return true;
     }
 
-    return true;
+    return false;
 }
 std::vector<std::pair<wxPoint, wxPoint>> DIMENSION_LINEAR::GetLines()
 {

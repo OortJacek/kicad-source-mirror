@@ -13,7 +13,7 @@ class DIMENSION_LINEAR : public DIMENSION
 {
 private:
 
-    std::vector<wxPoint*> points;
+    std::vector<wxPoint*> constructionPoints;
 
 public:
 
@@ -25,8 +25,8 @@ public:
     double  GetAngle() const override { return m_Angle; }
     void    SetAngle(double aAngle) const override;
 
-    int     GetDrawingPointsNumber() override { return m_DrawingPointsNumber; };
-    bool    SetDrawingPoint(int aPointNumber, wxPoint& aPos) override;
+    int     GetConstructionPointsNumber() override { return m_ConstructionPointsNumber; };
+    bool    SetConstructionPoint(unsigned aPointNumber, wxPoint& aPos) override;
 
     std::vector<std::pair<wxPoint, wxPoint>>                GetLines() override;
     std::vector<std::pair<wxPoint, std::function<void()>>>  GetEditPoints() override;
