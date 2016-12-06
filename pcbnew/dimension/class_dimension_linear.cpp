@@ -87,12 +87,17 @@ bool DIMENSION_LINEAR::SetConstructionPoint(unsigned aNr, wxPoint& aPoint)
         {
             std::cout << "x:" << point->x << " y:" << point->y << std::endl;
         }
-
         return true;
     }
 
     return false;
 }
+
+bool DIMENSION_LINEAR::RebuildDimensionSchape()
+{
+    return false;
+}
+
 std::vector<std::pair<wxPoint, wxPoint>> DIMENSION_LINEAR::GetLines()
 {
     std::vector<std::pair<wxPoint, wxPoint>> vect = {};
@@ -108,6 +113,19 @@ std::vector<std::pair<wxPoint, std::function<void()>>> DIMENSION_LINEAR::GetEdit
 
 void DIMENSION_LINEAR::Move( const wxPoint& offset )
 {
+    m_Text.SetTextPosition( m_Text.GetTextPosition() + offset );
+    m_crossBarO     += offset;
+    m_crossBarOOut  += offset;
+    m_crossBarF     += offset;
+    m_crossBarFOut  += offset;
+    m_featureLineGO += offset;
+    m_featureLineGF += offset;
+    m_featureLineDO += offset;
+    m_featureLineDF += offset;
+    m_arrowG1F  += offset;
+    m_arrowG2F  += offset;
+    m_arrowD1F  += offset;
+    m_arrowD2F  += offset;
 }
 
 

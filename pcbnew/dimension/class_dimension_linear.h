@@ -15,6 +15,15 @@ private:
 
     std::vector<wxPoint*> constructionPoints;
 
+    wxPoint     m_crossBarO, m_crossBarF;
+    wxPoint     m_crossBarOOut, m_crossBarFOut;
+    wxPoint     m_featureLineGO, m_featureLineGF;
+    wxPoint     m_featureLineDO, m_featureLineDF;
+    wxPoint     m_arrowD1F, m_arrowD2F;
+    wxPoint     m_arrowG1F, m_arrowG2F;
+
+    bool RebuildDimensionSchape();
+
 public:
 
     DIMENSION_LINEAR( BOARD_ITEM* aParent );
