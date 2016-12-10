@@ -61,6 +61,65 @@ DIMENSION::~DIMENSION()
 }
 
 
+void DIMENSION::SetValue( int aValue )
+{
+    m_Value = aValue;
+}
+
+
+int DIMENSION::GetValue() const
+{
+    return m_Value;
+}
+
+
+wxString DIMENSION::GetClass() const
+{
+    return wxT( "DIMENSION" );
+}
+
+int DIMENSION::GetWidth() const
+{
+    return m_Width;
+}
+
+
+void DIMENSION::SetWidth( int aWidth )
+{
+    m_Width = aWidth;
+}
+
+
+void DIMENSION::SetOutside( bool aOutside)
+{
+    m_outside = aOutside;
+}
+
+
+bool DIMENSION::IsOutside() const
+{
+    return m_outside;
+}
+
+
+void DIMENSION::SetFreeText( bool aFreeText )
+{
+    return;
+}
+
+
+bool DIMENSION::IsFreeText() const
+{
+    return m_FreeText;
+}
+
+
+DimShape DIMENSION::GetDimensionShape()
+{
+    return m_Shape;
+}
+
+
 void DIMENSION::SetPosition( const wxPoint& aPos )
 {
     m_Text.SetTextPosition( aPos );
@@ -91,3 +150,32 @@ void DIMENSION::SetLayer( LAYER_ID aLayer )
     m_Text.SetLayer( aLayer );
 }
 
+
+void DIMENSION::SetTextSize( const wxSize& aTextSize )
+{
+    m_Text.SetSize( aTextSize );
+}
+
+
+TEXTE_PCB& DIMENSION::Text()
+{
+    return m_Text;
+}
+
+
+TEXTE_PCB& DIMENSION::Text() const
+{
+    return *(const_cast<TEXTE_PCB*> (&m_Text));
+}
+
+
+const wxPoint& DIMENSION::GetTextPosition() const
+{
+    return m_Text.GetTextPosition();
+}
+
+
+void DIMENSION::SetTextPosition( const wxPoint& aPosition )
+{
+    return;
+}

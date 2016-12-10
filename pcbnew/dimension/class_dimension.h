@@ -57,8 +57,8 @@ class DIMENSION : public BOARD_ITEM
 {
 protected:
     int         m_Width;        ///< Line width
-    int         m_Shape;        ///< Currently always 0.
-    int         m_ConstructionPointsNumber;
+    DimShape    m_Shape;        ///< Currently always 0.
+    bool        m_DoNotChangeTextValue;
     double      m_Angle;
     EDA_UNITS_T m_Unit;         ///< 0 = inches, 1 = mm
     int         m_Value;        ///< value of PCB dimensions.
@@ -71,38 +71,36 @@ public:
     DIMENSION( BOARD_ITEM* aParent );
     ~DIMENSION();
 
-/* Dimension text value */
-    void            SetValue( int aValue ) { m_Value = aValue; }
-    int             GetValue() const { return m_Value; }
+/* Dimension text */
+    void            SetValue( int aValue );
+    int             GetValue() const;
 
-    const wxPoint&  GetTextPosition() const	{ return m_Text.GetTextPosition(); }
-    void            SetTextPosition( const wxPoint& aPosition ) {return;}
+    const wxPoint&  GetTextPosition() const;
+    void            SetTextPosition( const wxPoint& aPosition );
 
     void            SetText( const wxString& NewText );
     const wxString  GetText() const;
 
-    TEXTE_PCB&      Text()  { return m_Text; }
-    TEXTE_PCB&      Text() const  { return *(const_cast<TEXTE_PCB*> (&m_Text)); }
+    TEXTE_PCB&      Text();
+    TEXTE_PCB&      Text() const;
 
-    void            SetTextSize( const wxSize& aTextSize )  {m_Text.SetSize( aTextSize ); }
+    void            SetTextSize( const wxSize& aTextSize );
 
 /* General DIMENSION properties */
-    int             GetWidth() const { return m_Width; }
-    void            SetWidth( int aWidth ) { m_Width = aWidth; }
+    int             GetWidth() const;
+    bool            IsOutside() const;
+    bool            IsFreeText() const;
+    DimShape        GetDimensionShape();
 
-    void            SetOutside( bool aOutside) { return;}
-    bool            IsOutside() const { return m_outside; }
-
-    void            SetFreeText( bool aFreeText ) {return;}
-    bool            IsFreeText() const { return m_FreeText; }
-
-    int             GetDimensionShape() {return m_Shape;}
+    void            SetWidth( int aWidth );
+    void            SetOutside( bool aOutside );
+    void            SetFreeText( bool aFreeText );
 
 /* Specified dimension API */
     virtual double  GetAngle() const = 0;
-    virtual void    SetAngle(double aAngle) const = 0;
+    virtual void    SetAngle( double aAngle ) = 0;
 
-    virtual int     GetConstructionPointsNumber() = 0;;
+    virtual int     GetConstructionPointsNumber() = 0;
     virtual bool    SetConstructionPoint(unsigned aPointNumber, wxPoint& aPos) = 0;
 
     virtual std::vector<std::pair<wxPoint, wxPoint>> GetLines() = 0;
@@ -113,10 +111,8 @@ public:
     const wxPoint&  GetPosition() const                 override;
     void            SetPosition( const wxPoint& aPos )  override;
     void            SetLayer( LAYER_ID aLayer )         override;
-    wxString        GetClass() const                    override
-    {
-        return wxT( "DIMENSION" );
-    }
+    wxString        GetClass() const                    override;
+
 
 #if defined(DEBUG)
     virtual void Show( int nestLevel, std::ostream& os ) const override { ShowDummy( os ); }
