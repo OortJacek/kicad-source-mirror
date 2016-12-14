@@ -61,7 +61,7 @@ DIMENSION_LINEAR::~DIMENSION_LINEAR()
 {
 }
 
-void DIMENSION_LINEAR::SetAngle(double aAngle) const
+void DIMENSION_LINEAR::SetAngle(double aAngle)
 {
     return;
 }
@@ -423,4 +423,11 @@ BITMAP_DEF DIMENSION_LINEAR::GetMenuImage() const
 wxString DIMENSION_LINEAR::GetClass() const
 {
     return wxT( "DIMENSION_LINEAR" );
+}
+
+void DIMENSION_LINEAR::Draw( EDA_DRAW_PANEL* panel, wxDC* DC,
+               GR_DRAWMODE aColorMode,
+               const wxPoint& offset )
+{
+
 }

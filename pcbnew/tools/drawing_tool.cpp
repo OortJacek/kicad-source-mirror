@@ -428,15 +428,15 @@ int DRAWING_TOOL::DrawDimension( const TOOL_EVENT& aEvent )
             {
                 std::cout << "BUT_LEFT" << dimension << std::endl;
 
-                if(dimension->GetDrawingPointsNumber()-1 > step)
+                if(dimension->GetConstructionPointsNumber()-1 > step)
                 {
-                    dimension->SetDrawingPoint(step, cursorPos);
+                    dimension->SetConstructionPoint(step, cursorPos);
                     step++;
                 }
                 else /* last point */
                 {
 
-                    dimension->SetDrawingPoint(step, cursorPos);
+                    dimension->SetConstructionPoint(step, cursorPos);
 
                     preview.Remove( dimension );
 
@@ -451,11 +451,11 @@ int DRAWING_TOOL::DrawDimension( const TOOL_EVENT& aEvent )
                 }
             }
 
-            else if( evt->IsMotion() && dimension->GetDrawingPointsNumber()-1 > step )
+            else if( evt->IsMotion() && dimension->GetConstructionPointsNumber()-1 > step )
             {
                 std::cout << "IsMotion" << dimension << std::endl;
 
-                dimension->SetDrawingPoint(step, cursorPos);
+                dimension->SetConstructionPoint(step, cursorPos);
 
                 // Show a preview of the item
                 preview.ViewUpdate( KIGFX::VIEW_ITEM::GEOMETRY );

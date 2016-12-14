@@ -35,8 +35,8 @@ public:
 
 /* Specified dimension API */
 
-    double  GetAngle() const override { return m_Angle; }
-    void    SetAngle(double aAngle)                                     const override;
+    double  GetAngle() 												   const override;
+    void    SetAngle(double aAngle)                                          override;
 
     int     GetConstructionPointsNumber()                                    override;
     bool    SetConstructionPoint(unsigned aPointNumber, wxPoint& aPos)       override;

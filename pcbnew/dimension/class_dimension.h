@@ -97,6 +97,8 @@ public:
     void            SetFreeText( bool aFreeText );
 
 /* Specified dimension API */
+    virtual void Mirror( const wxPoint& axis_pos ) = 0;
+
     virtual double  GetAngle() const = 0;
     virtual void    SetAngle( double aAngle ) = 0;
 
